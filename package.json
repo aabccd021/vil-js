@@ -1,0 +1,12 @@
+{
+  "name": "vil-js",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "vanilla-virtua": "github:aabccd021/vanilla-virtua"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.47.2"
+  }
+}
