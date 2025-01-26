@@ -129,7 +129,7 @@ test("middle", async ({ page }) => {
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
 
-  await scrollTo(scrollable, 900);
+  await scrollTo(scrollable, 1000);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 5");
