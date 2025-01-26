@@ -2,9 +2,9 @@ function childLoad(args) {
   if (args?.listId !== "main-list") {
     return;
   }
-  const rootElt = args?.root ?? document;
+  const root = args?.root ?? document;
 
-  const listItems = rootElt.querySelectorAll("li");
+  const listItems = root.querySelectorAll("li");
   for (const listItem of listItems) {
     if (listItem.getAttribute("data-initialized") === "true") {
       continue;
