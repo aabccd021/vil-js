@@ -103,11 +103,9 @@ function initRoot(root: Element, cache: Cache | undefined): InitResult {
   const listCache = cache?.[listId];
 
   const vList = vListInit({
-    children: Array.from(root.children),
+    element: root,
     cache: listCache?.virtuaSnapshot,
   });
-
-  root.appendChild(vList.root);
 
   if (listCache?.scrollOffset) {
     vList.context.scroller.$scrollTo(listCache.scrollOffset);
