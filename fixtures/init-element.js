@@ -1,33 +1,33 @@
-/**
- * @typedef {Function} Unsub
- * @returns {void}
- */
-
-/**
- * @typedef {Object} VilInitEvent
- * @property {Element} element
- * @property {string} listId
- */
-
-/**
- * @typedef {Function} InitChild
- * @param {VilInitEvent} event
- * @returns {Promise<Unsub | undefined> | Unsub | undefined}
- */
-export function vilInitChild({ listId, element }) {
-  // assert element is HTMLElement
-  if (listId !== "main-list" || !(element instanceof HTMLElement)) {
+function childLoad(args) {
+  if (args?.listId !== "main-list") {
     return;
   }
-  element.addEventListener("click", () => {
-    console.warn(`Clicked on ${element.textContent}`);
-  });
+  const rootElt = args?.root ?? document;
 
-  const textContent = element.textContent;
+  const listItems = rootElt.querySelectorAll("li");
+  for (const listItem of listItems) {
+    if (listItem.getAttribute("data-initialized") === "true") {
+      continue;
+    }
 
-  element.textContent = `${textContent} ${element.dataset["itemId"]}`;
-
-  return () => {
-    element.textContent = "Item";
-  };
+    listItem.addEventListener("click", () => {
+      console.warn(`Clicked on ${listItem.textContent}`);
+    });
+    const textContent = listItem.textContent;
+    listItem.textContent = `${textContent} ${listItem.dataset["itemId"]}`;
+    listItem.setAttribute("data-initialized", "true");
+  }
 }
+
+function childUnload() {
+  const listItems = document.querySelectorAll("li[data-initialized=true]");
+  for (const listItem of listItems) {
+    listItem.removeAttribute("data-initialized");
+    listItem.textContent = "Item";
+  }
+}
+
+export const vilHooks = {
+  childLoad,
+  childUnload,
+};

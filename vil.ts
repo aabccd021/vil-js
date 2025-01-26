@@ -13,17 +13,7 @@ type ListCache = {
 
 type Cache = Record<string, ListCache>;
 
-type Unsub = () => void;
-
-type VilInitEvent = {
-  element: Element;
-  listId: string;
-};
-
-type InitChild = (event: VilInitEvent) => Promise<Unsub | undefined> | undefined;
-
 type InitResult = {
-  unsubs: Unsub[];
   vList: VirtuaInitResult;
   root: HTMLElement;
   listId: string;
@@ -33,33 +23,27 @@ type FreezeInitEvent = {
   cache?: Cache;
 };
 
-async function triggerInitChild(listId: string, inits: InitChild[], children: Element[]): Promise<Unsub[]> {
-  const vilInitPromises = inits.flatMap((init) => children.map((child) => init({ element: child, listId })));
+type VilHooks = Record<string, (...args: unknown[]) => unknown>;
 
-  const vilInitResult = await Promise.allSettled(vilInitPromises);
-
-  for (const initResult of vilInitResult) {
-    if (initResult.status === "rejected") {
-      console.error(initResult.reason);
+function triggerChildLoad(listId: string, hooks: VilHooks[], root: Element): void {
+  for (const hook of Object.values(hooks)) {
+    if ("childLoad" in hook && typeof hook["childLoad"] === "function") {
+      hook["childLoad"]({ listId, root });
     }
   }
-
-  const unsubs = vilInitResult
-    .filter((init) => init.status === "fulfilled")
-    .map((init) => init.value)
-    .filter((init) => init !== undefined);
-
-  return unsubs;
 }
 
 function infiniteScroll(
   listId: string,
-  unsubs: Unsub[],
-  childInits: InitChild[],
+  hooks: VilHooks[],
   context: Context,
   next: HTMLAnchorElement,
   triggers: NodeListOf<Element>,
 ): void {
+  if (triggers.length === 0) {
+    return;
+  }
+
   const observer = new IntersectionObserver(async (entries) => {
     if (entries.every((entry) => !entry.isIntersecting)) {
       return;
@@ -80,15 +64,9 @@ function infiniteScroll(
       trigger.removeAttribute("data-infinite-trigger");
     }
 
-    const newTriggers = newRoot.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
+    triggerChildLoad(listId, hooks, newRoot);
 
     const newChildren = Array.from(newRoot.children);
-
-    const newUnsubs = await triggerInitChild(listId, childInits, newChildren);
-    for (const unsub of newUnsubs) {
-      unsubs.push(unsub);
-    }
-
     appendChildren(context, newChildren);
 
     const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
@@ -98,7 +76,8 @@ function infiniteScroll(
     }
     next.replaceWith(newNext);
 
-    infiniteScroll(listId, unsubs, childInits, context, newNext, newTriggers);
+    const newTriggers = newRoot.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
+    infiniteScroll(listId, hooks, context, newNext, newTriggers);
   });
 
   for (const trigger of Array.from(triggers)) {
@@ -123,35 +102,7 @@ async function initRoot(root: Element, cache: Cache | undefined): Promise<InitRe
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
   const next = document.body.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
 
-  const moduleInitPromises = Array.from(document.querySelectorAll("script"))
-    .filter((script) => script.type === "module")
-    .map(async (script): Promise<InitChild | undefined> => {
-      const module = await import(script.src);
-      if (
-        typeof module === "object" &&
-        module !== null &&
-        "vilInitChild" in module &&
-        typeof module.vilInitChild === "function"
-      ) {
-        return module.vilInitChild;
-      }
-      return undefined;
-    });
-
-  const moduleInitResults = await Promise.allSettled(moduleInitPromises);
-
-  for (const moduleInitResult of moduleInitResults) {
-    if (moduleInitResult.status === "rejected") {
-      console.error(moduleInitResult.reason);
-    }
-  }
-
-  const childInits = moduleInitResults
-    .filter((init) => init.status === "fulfilled")
-    .map((init) => init.value)
-    .filter((init) => init !== undefined);
-
-  const unsubs = await triggerInitChild(listId, childInits, Array.from(root.children));
+  triggerChildLoad(listId, hooks, root);
 
   const listCache = cache?.[listId];
 
@@ -170,16 +121,40 @@ async function initRoot(root: Element, cache: Cache | undefined): Promise<InitRe
   }
 
   if (next !== null) {
-    infiniteScroll(listId, unsubs, childInits, vList.context, next, triggers);
+    infiniteScroll(listId, hooks, vList.context, next, triggers);
   }
 
-  return { unsubs, vList, root, listId };
+  return { vList, root, listId };
 }
 
 let lists: InitResult[];
+let hooks: VilHooks[];
 
 async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
   const roots = document.body.querySelectorAll("[data-infinite-root]");
+
+  const moduleLoadPromises = Array.from(document.querySelectorAll("script"))
+    .filter((script) => script.type === "module")
+    .map((script) => import(script.src));
+
+  const moduleLoadResults = await Promise.allSettled(moduleLoadPromises);
+
+  for (const moduleLoadResult of moduleLoadResults) {
+    if (moduleLoadResult.status === "rejected") {
+      console.error(moduleLoadResult.reason);
+    }
+  }
+
+  const modules = moduleLoadResults
+    .filter((moduleLoadResult) => moduleLoadResult.status === "fulfilled")
+    .map((moduleLoadResult) => moduleLoadResult.value);
+
+  hooks = [];
+  for (const module of modules) {
+    if ("vilHooks" in module && typeof module.vilHooks === "object" && module.vilHooks !== null) {
+      hooks.push(module.vilHooks);
+    }
+  }
 
   const rootInitPromises = Array.from(roots).map((root) => initRoot(root, cache));
   const rootInitResults = await Promise.allSettled(rootInitPromises);
@@ -188,7 +163,7 @@ async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
 
 function pageUnload(): Cache {
   const cache: Cache = {};
-  for (const { unsubs, vList, root, listId } of lists) {
+  for (const { vList, root, listId } of lists) {
     const virtuaSnapshot = vList.context.store.$getCacheSnapshot();
     const scrollOffset = vList.context.store.$getScrollOffset();
 
@@ -198,17 +173,15 @@ function pageUnload(): Cache {
 
     vList.root.remove();
 
-    for (const unsub of unsubs) {
-      unsub();
-    }
-
-    const newListCache: ListCache = {
-      virtuaSnapshot,
-      scrollOffset,
-    };
-
-    cache[listId] = newListCache;
+    cache[listId] = { virtuaSnapshot, scrollOffset };
   }
+
+  for (const hook of hooks) {
+    if ("childUnload" in hook && typeof hook["childUnload"] === "function") {
+      hook["childUnload"]();
+    }
+  }
+
   return cache;
 }
 
