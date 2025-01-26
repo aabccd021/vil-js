@@ -22,7 +22,7 @@
 
       freezeJs = pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/aabccd021/freeze-js/refs/heads/main/freeze.ts";
-        hash = "sha256-PW0Sflc2EA0lslhE2YswaoWiVaTubcTK+j++ZWMAxWE=";
+        hash = "sha256-R2eXA/cjxWfB1geLfPsvQKkx78Q+3VqawaKlMTZapWA=";
       };
 
       serve = pkgs.writeShellApplication {
@@ -33,6 +33,7 @@
             --bundle \
             --target=es6 \
             --format=esm \
+            --sourcemap \
             --outfile="$root/fixtures/freeze.js"
           ${pkgs.esbuild}/bin/esbuild "$root/vil.ts" \
             --bundle \
@@ -40,6 +41,7 @@
             --format=esm \
             --outdir="$root/fixtures" \
             --servedir="$root/fixtures" \
+            --sourcemap \
             --watch
         '';
       };

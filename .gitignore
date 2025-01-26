@@ -31,5 +31,6 @@ dist-ssr
 /playwright/.cache/
 fixtures/vil.js
 fixtures/freeze.js
+fixtures/freeze.js.map
 result
 .gcroot

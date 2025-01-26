@@ -1,4 +1,10 @@
-import { type CacheSnapshot, type Context, type InitResult, appendChildren, init as vListInit } from "vanilla-virtua";
+import {
+  type CacheSnapshot,
+  type Context,
+  type InitResult as VirtuaInitResult,
+  appendChildren,
+  init as vListInit,
+} from "vanilla-virtua";
 
 type ListCache = {
   virtuaSnapshot: CacheSnapshot;
@@ -15,6 +21,13 @@ type VilInitEvent = {
 };
 
 type InitChild = (event: VilInitEvent) => Promise<Unsub | undefined> | undefined;
+
+type InitResult = {
+  unsubs: Unsub[];
+  vList: VirtuaInitResult;
+  root: HTMLElement;
+  listId: string;
+};
 
 type FreezeInitEvent = {
   cache?: Cache;
@@ -97,15 +110,7 @@ function waitAnimationFrame(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
 
-async function initRoot(
-  root: Element,
-  cache: Cache | undefined,
-): Promise<{
-  unsubs: Unsub[];
-  vList: InitResult;
-  root: HTMLElement;
-  listId: string;
-}> {
+async function initRoot(root: Element, cache: Cache | undefined): Promise<InitResult> {
   if (!(root instanceof HTMLElement)) {
     throw new Error("Root is not an HTMLElement");
   }
@@ -171,38 +176,43 @@ async function initRoot(
   return { unsubs, vList, root, listId };
 }
 
-async function init({ cache }: FreezeInitEvent): Promise<Unsub | undefined> {
+let lists: InitResult[];
+
+async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
   const roots = document.body.querySelectorAll("[data-infinite-root]");
 
   const rootInitPromises = Array.from(roots).map((root) => initRoot(root, cache));
   const rootInitResults = await Promise.allSettled(rootInitPromises);
-  const lists = rootInitResults.filter((result) => result.status === "fulfilled").map((result) => result.value);
-
-  return (): Cache => {
-    const cache: Cache = {};
-    for (const { unsubs, vList, root, listId } of lists) {
-      const virtuaSnapshot = vList.context.store.$getCacheSnapshot();
-      const scrollOffset = vList.context.store.$getScrollOffset();
-
-      for (const child of vList.context.state.children) {
-        root.appendChild(child);
-      }
-
-      vList.root.remove();
-
-      for (const unsub of unsubs) {
-        unsub();
-      }
-
-      const newListCache: ListCache = {
-        virtuaSnapshot,
-        scrollOffset,
-      };
-
-      cache[listId] = newListCache;
-    }
-    return cache;
-  };
+  lists = rootInitResults.filter((result) => result.status === "fulfilled").map((result) => result.value);
 }
 
-export const freezePageLoad = init;
+function pageUnload(): Cache {
+  const cache: Cache = {};
+  for (const { unsubs, vList, root, listId } of lists) {
+    const virtuaSnapshot = vList.context.store.$getCacheSnapshot();
+    const scrollOffset = vList.context.store.$getScrollOffset();
+
+    for (const child of vList.context.state.children) {
+      root.appendChild(child);
+    }
+
+    vList.root.remove();
+
+    for (const unsub of unsubs) {
+      unsub();
+    }
+
+    const newListCache: ListCache = {
+      virtuaSnapshot,
+      scrollOffset,
+    };
+
+    cache[listId] = newListCache;
+  }
+  return cache;
+}
+
+export const freezeHooks = {
+  pageLoad,
+  pageUnload,
+};
