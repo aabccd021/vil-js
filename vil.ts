@@ -25,10 +25,10 @@ type FreezeInitEvent = {
 
 type VilHooks = Record<string, (...args: unknown[]) => unknown>;
 
-function triggerChildLoad(listId: string, hooks: VilHooks[], root: Element): void {
+function triggerChildLoad(listId: string, hooks: VilHooks[], document?: Document): void {
   for (const hook of Object.values(hooks)) {
     if ("childLoad" in hook && typeof hook["childLoad"] === "function") {
-      hook["childLoad"]({ listId, root });
+      hook["childLoad"]({ listId, document });
     }
   }
 }
@@ -64,10 +64,9 @@ function infiniteScroll(
       trigger.removeAttribute("data-infinite-trigger");
     }
 
-    triggerChildLoad(listId, hooks, newRoot);
+    triggerChildLoad(listId, hooks, newDoc);
 
     const newChildren = Array.from(newRoot.children);
-
     appendChildren(context, newChildren);
 
     const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
@@ -99,7 +98,7 @@ function initRoot(root: Element, cache: Cache | undefined): InitResult {
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
   const next = document.body.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
 
-  triggerChildLoad(listId, hooks, root);
+  triggerChildLoad(listId, hooks);
 
   const listCache = cache?.[listId];
 
