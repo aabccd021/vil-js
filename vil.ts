@@ -51,7 +51,7 @@ function infiniteScroll(
 
     observer.disconnect();
 
-    const response = await fetch(next.href);
+    const response = await fetch(next.href, { redirect: "follow" });
     const html = await response.text();
     const newDoc = new DOMParser().parseFromString(html, "text/html");
 
@@ -67,6 +67,7 @@ function infiniteScroll(
     triggerChildLoad(listId, hooks, newRoot);
 
     const newChildren = Array.from(newRoot.children);
+
     appendChildren(context, newChildren);
 
     const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
@@ -85,11 +86,7 @@ function infiniteScroll(
   }
 }
 
-function waitAnimationFrame(): Promise<void> {
-  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
-}
-
-async function initRoot(root: Element, cache: Cache | undefined): Promise<InitResult> {
+function initRoot(root: Element, cache: Cache | undefined): InitResult {
   if (!(root instanceof HTMLElement)) {
     throw new Error("Root is not an HTMLElement");
   }
@@ -111,12 +108,9 @@ async function initRoot(root: Element, cache: Cache | undefined): Promise<InitRe
     cache: listCache?.virtuaSnapshot,
   });
 
-  await waitAnimationFrame();
-
   root.appendChild(vList.root);
 
   if (listCache?.scrollOffset) {
-    await waitAnimationFrame();
     vList.context.scroller.$scrollTo(listCache.scrollOffset);
   }
 
@@ -156,9 +150,7 @@ async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
     }
   }
 
-  const rootInitPromises = Array.from(roots).map((root) => initRoot(root, cache));
-  const rootInitResults = await Promise.allSettled(rootInitPromises);
-  lists = rootInitResults.filter((result) => result.status === "fulfilled").map((result) => result.value);
+  lists = Array.from(roots).map((root) => initRoot(root, cache));
 }
 
 function pageUnload(): Cache {
