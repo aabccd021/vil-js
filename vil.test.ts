@@ -97,6 +97,7 @@ test("bottom top", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
+  await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
   await scrollTo(scrollable, 0);
@@ -110,6 +111,7 @@ test("bottom top", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
+  await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
   await scrollTo(scrollable, 0);
@@ -155,6 +157,7 @@ test("middle", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
+  await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
   expect(log.consoleMessages).toEqual([]);
@@ -171,6 +174,7 @@ test("btm", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
+  await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
   await page.getByText("Go to dynamic").click();
@@ -180,6 +184,7 @@ test("btm", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
+  await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
   expect(log.consoleMessages).toEqual([]);
