@@ -55,14 +55,14 @@ function infiniteScroll(
     const html = await response.text();
     const newDoc = new DOMParser().parseFromString(html, "text/html");
 
-    const newRoot = newDoc.querySelector(`[data-vil-root="${listId}"]`);
-    if (newRoot === null) {
+    const newContainer = newDoc.querySelector(`[data-vil-container="${listId}"]`);
+    if (newContainer === null) {
       return;
     }
 
-    const container = newRoot.firstElementChild;
-    if (container === null) {
-      console.warn("No container found in new root");
+    const newRoot = newContainer.parentElement;
+    if (newRoot === null) {
+      console.warn("No parent found for new container");
       return;
     }
 
@@ -74,7 +74,7 @@ function infiniteScroll(
 
     triggerChildLoad(listId, hooks, newDoc);
 
-    const newChildren = Array.from(container.children);
+    const newChildren = Array.from(newContainer.children);
 
     const htmlElChildren = newChildren.filter((child) => child instanceof HTMLElement);
 
@@ -100,22 +100,22 @@ function infiniteScroll(
   }
 }
 
-function initRoot(root: Element, cache: Cache | undefined): InitResult {
-  if (!(root instanceof HTMLElement)) {
-    throw new Error("Root is not an HTMLElement");
-  }
-
-  const container = root.firstElementChild;
+function initContainer(container: Element, cache: Cache | undefined): InitResult {
   if (!(container instanceof HTMLElement)) {
     throw new Error("Container is not an HTMLElement");
   }
 
-  const listId = root.dataset["vilRoot"];
+  const root = container.parentElement;
+  if (!(root instanceof HTMLElement)) {
+    throw new Error("Root is not an HTMLElement");
+  }
+
+  const listId = container.dataset["vilContainer"];
   if (listId === undefined) {
     throw new Error("List ID not found");
   }
 
-  const triggers = root.querySelectorAll(`[data-vil-trigger="${listId}"]`);
+  const triggers = container.querySelectorAll(`[data-vil-trigger="${listId}"]`);
   const next = document.body.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
 
   triggerChildLoad(listId, hooks);
@@ -141,7 +141,7 @@ let lists: InitResult[];
 let hooks: VilHooks[];
 
 async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
-  const roots = document.body.querySelectorAll("[data-vil-root]");
+  const containers = document.body.querySelectorAll("[data-vil-container]");
 
   const moduleLoadPromises = Array.from(document.querySelectorAll("script"))
     .filter((script) => script.type === "module")
@@ -166,7 +166,7 @@ async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
     }
   }
 
-  lists = Array.from(roots).map((root) => initRoot(root, cache));
+  lists = Array.from(containers).map((container) => initContainer(container, cache));
 }
 
 function pageUnload(): Cache {
