@@ -1,0 +1,29 @@
+:root {
+  color-scheme: dark;
+  scrollbar-gutter: stable;
+}
+.root {
+  display: block;
+  overflow-y: auto;
+  contain: strict;
+  width: 80dvw;
+  height: 80dvh;
+}
+.container {
+  overflow-anchor: none;
+  flex: none;
+  position: relative;
+  width: 100%;
+}
+li {
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  left: 0;
+}
+
+/* reset ul */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}

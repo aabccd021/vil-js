@@ -15,7 +15,7 @@ type Cache = Record<string, ListCache>;
 
 type InitResult = {
   vList: VirtuaInitResult;
-  root: HTMLElement;
+  container: HTMLElement;
   listId: string;
 };
 
@@ -60,14 +60,30 @@ function infiniteScroll(
       return;
     }
 
+    const container = newRoot.firstElementChild;
+    if (container === null) {
+      console.warn("No container found in new root");
+      return;
+    }
+
+    const newTriggers = newRoot.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
+
     for (const trigger of Array.from(triggers)) {
       trigger.removeAttribute("data-infinite-trigger");
     }
 
     triggerChildLoad(listId, hooks, newDoc);
 
-    const newChildren = Array.from(newRoot.children);
-    appendChildren(context, newChildren);
+    const newChildren = Array.from(container.children);
+
+    const htmlElChildren = newChildren.filter((child) => child instanceof HTMLElement);
+
+    if (htmlElChildren.length !== newChildren.length) {
+      console.error(newChildren);
+      throw new Error("Non-HTMLElement children found");
+    }
+
+    appendChildren(context, htmlElChildren);
 
     const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
     if (newNext === null) {
@@ -76,7 +92,6 @@ function infiniteScroll(
     }
     next.replaceWith(newNext);
 
-    const newTriggers = newRoot.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
     infiniteScroll(listId, hooks, context, newNext, newTriggers);
   });
 
@@ -88,6 +103,11 @@ function infiniteScroll(
 function initRoot(root: Element, cache: Cache | undefined): InitResult {
   if (!(root instanceof HTMLElement)) {
     throw new Error("Root is not an HTMLElement");
+  }
+
+  const container = root.firstElementChild;
+  if (!(container instanceof HTMLElement)) {
+    throw new Error("Container is not an HTMLElement");
   }
 
   const listId = root.dataset["infiniteRoot"];
@@ -103,7 +123,7 @@ function initRoot(root: Element, cache: Cache | undefined): InitResult {
   const listCache = cache?.[listId];
 
   const vList = vListInit({
-    element: root,
+    root,
     cache: listCache?.virtuaSnapshot,
     scrollOffset: listCache?.scrollOffset,
   });
@@ -114,7 +134,7 @@ function initRoot(root: Element, cache: Cache | undefined): InitResult {
     });
   }
 
-  return { vList, root, listId };
+  return { vList, container, listId };
 }
 
 let lists: InitResult[];
@@ -151,15 +171,14 @@ async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
 
 function pageUnload(): Cache {
   const cache: Cache = {};
-  for (const { vList, root, listId } of lists) {
+  for (const { vList, container, listId } of lists) {
     const virtuaSnapshot = vList.context.store.$getCacheSnapshot();
     const scrollOffset = vList.context.store.$getScrollOffset();
 
     for (const child of vList.context.state.children) {
-      root.appendChild(child);
+      container.appendChild(child);
     }
 
-    vList.root.remove();
     vList.dispose();
 
     cache[listId] = { virtuaSnapshot, scrollOffset };
