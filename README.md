@@ -1,3 +1,4 @@
 # vil-js
 
-- handle unsub throw error
+- use container as root, find parent as root
+- handle childLoad && childUnload throw error
