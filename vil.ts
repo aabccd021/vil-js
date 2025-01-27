@@ -105,11 +105,6 @@ function initContainer(container: Element, cache: Cache | undefined): InitResult
     throw new Error("Container is not an HTMLElement");
   }
 
-  const root = container.parentElement;
-  if (!(root instanceof HTMLElement)) {
-    throw new Error("Root is not an HTMLElement");
-  }
-
   const listId = container.dataset["vilContainer"];
   if (listId === undefined) {
     throw new Error("List ID not found");
@@ -123,7 +118,7 @@ function initContainer(container: Element, cache: Cache | undefined): InitResult
   const listCache = cache?.[listId];
 
   const vList = vListInit({
-    root,
+    container,
     cache: listCache?.virtuaSnapshot,
     scrollOffset: listCache?.scrollOffset,
   });
