@@ -160,6 +160,7 @@ function pageUnload(): Cache {
     }
 
     vList.root.remove();
+    vList.dispose();
 
     cache[listId] = { virtuaSnapshot, scrollOffset };
   }
