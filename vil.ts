@@ -105,11 +105,8 @@ function initRoot(root: Element, cache: Cache | undefined): InitResult {
   const vList = vListInit({
     element: root,
     cache: listCache?.virtuaSnapshot,
+    scrollOffset: listCache?.scrollOffset,
   });
-
-  if (listCache?.scrollOffset) {
-    vList.context.scroller.$scrollTo(listCache.scrollOffset);
-  }
 
   if (next !== null) {
     requestIdleCallback(() => {
