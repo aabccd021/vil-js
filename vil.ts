@@ -55,7 +55,7 @@ function infiniteScroll(
     const html = await response.text();
     const newDoc = new DOMParser().parseFromString(html, "text/html");
 
-    const newRoot = newDoc.querySelector(`[data-infinite-root="${listId}"]`);
+    const newRoot = newDoc.querySelector(`[data-vil-root="${listId}"]`);
     if (newRoot === null) {
       return;
     }
@@ -66,10 +66,10 @@ function infiniteScroll(
       return;
     }
 
-    const newTriggers = newRoot.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
+    const newTriggers = newRoot.querySelectorAll(`[data-vil-trigger="${listId}"]`);
 
     for (const trigger of Array.from(triggers)) {
-      trigger.removeAttribute("data-infinite-trigger");
+      trigger.removeAttribute("data-vil-trigger");
     }
 
     triggerChildLoad(listId, hooks, newDoc);
@@ -85,7 +85,7 @@ function infiniteScroll(
 
     appendChildren(context, htmlElChildren);
 
-    const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
+    const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
     if (newNext === null) {
       next.remove();
       return;
@@ -110,13 +110,13 @@ function initRoot(root: Element, cache: Cache | undefined): InitResult {
     throw new Error("Container is not an HTMLElement");
   }
 
-  const listId = root.dataset["infiniteRoot"];
+  const listId = root.dataset["vilRoot"];
   if (listId === undefined) {
     throw new Error("List ID not found");
   }
 
-  const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
-  const next = document.body.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
+  const triggers = root.querySelectorAll(`[data-vil-trigger="${listId}"]`);
+  const next = document.body.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
 
   triggerChildLoad(listId, hooks);
 
@@ -141,7 +141,7 @@ let lists: InitResult[];
 let hooks: VilHooks[];
 
 async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
-  const roots = document.body.querySelectorAll("[data-infinite-root]");
+  const roots = document.body.querySelectorAll("[data-vil-root]");
 
   const moduleLoadPromises = Array.from(document.querySelectorAll("script"))
     .filter((script) => script.type === "module")
