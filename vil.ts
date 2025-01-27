@@ -112,7 +112,9 @@ function initRoot(root: Element, cache: Cache | undefined): InitResult {
   }
 
   if (next !== null) {
-    infiniteScroll(listId, hooks, vList.context, next, triggers);
+    requestIdleCallback(() => {
+      infiniteScroll(listId, hooks, vList.context, next, triggers);
+    });
   }
 
   return { vList, root, listId };
