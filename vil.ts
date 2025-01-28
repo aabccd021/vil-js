@@ -135,7 +135,7 @@ function initContainer(container: Element, cache: Cache | undefined): InitResult
 let lists: InitResult[];
 let hooks: VilHooks[];
 
-async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
+async function pageLoad(): Promise<void> {
   const containers = document.body.querySelectorAll("[data-vil-container]");
 
   const moduleLoadPromises = Array.from(document.querySelectorAll("script"))
@@ -161,10 +161,14 @@ async function pageLoad({ cache }: FreezeInitEvent): Promise<void> {
     }
   }
 
+  const cacheMeta = document.querySelector<HTMLMetaElement>('meta[name="vil-cache"]');
+  cacheMeta?.remove();
+  const cache = JSON.parse(cacheMeta?.content ?? "undefined");
+
   lists = Array.from(containers).map((container) => initContainer(container, cache));
 }
 
-function pageUnload(): Cache {
+function pageUnload(): void {
   const cache: Cache = {};
   for (const { vList, container, listId } of lists) {
     const virtuaSnapshot = vList.context.store.$getCacheSnapshot();
@@ -185,7 +189,10 @@ function pageUnload(): Cache {
     }
   }
 
-  return cache;
+  const cacheMeta = document.createElement("meta");
+  cacheMeta.name = "vil-cache";
+  cacheMeta.content = JSON.stringify(cache);
+  document.head.appendChild(cacheMeta);
 }
 
 export const freezeHooks = {
