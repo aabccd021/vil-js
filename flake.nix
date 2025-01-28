@@ -22,7 +22,7 @@
 
       freezeJs = pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/aabccd021/freeze-js/refs/heads/main/freeze.ts";
-        hash = "sha256-VTd+1zqIijuNxu1frdddV0QJbbCArdWCjrhRqtGIZyc=";
+        hash = "sha256-tW5NnLmka1vHLd/TNTZlXniQv36xBm6XZWL2UCp9Sqw=";
       };
 
       serve = pkgs.writeShellApplication {
