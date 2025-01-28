@@ -19,10 +19,6 @@ type InitResult = {
   listId: string;
 };
 
-type FreezeInitEvent = {
-  cache?: Cache;
-};
-
 type VilHooks = Record<string, (...args: unknown[]) => unknown>;
 
 function triggerChildLoad(listId: string, hooks: VilHooks[], document?: Document): void {
@@ -100,7 +96,7 @@ function infiniteScroll(
   }
 }
 
-function initContainer(container: Element, cache: Cache | undefined): InitResult {
+function initContainer(container: Element, cache: Cache | null): InitResult {
   if (!(container instanceof HTMLElement)) {
     throw new Error("Container is not an HTMLElement");
   }
@@ -163,7 +159,7 @@ async function pageLoad(): Promise<void> {
 
   const cacheMeta = document.querySelector<HTMLMetaElement>('meta[name="vil-cache"]');
   cacheMeta?.remove();
-  const cache = JSON.parse(cacheMeta?.content ?? "undefined");
+  const cache = JSON.parse(cacheMeta?.content ?? "null");
 
   lists = Array.from(containers).map((container) => initContainer(container, cache));
 }
