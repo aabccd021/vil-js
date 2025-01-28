@@ -1,7 +1,7 @@
 import {
   type CacheSnapshot,
-  type Context,
   type InitResult as VirtuaInitResult,
+  type Context as VlistContext,
   appendChildren,
   init as vListInit,
 } from "vanilla-virtua";
@@ -29,70 +29,79 @@ function triggerChildLoad(listId: string, hooks: VilHooks[], document?: Document
   }
 }
 
-function infiniteScroll(
-  listId: string,
-  hooks: VilHooks[],
-  context: Context,
-  next: HTMLAnchorElement,
-  triggers: NodeListOf<Element>,
-): void {
-  if (triggers.length === 0) {
-    return;
-  }
+async function infiniteScroll(args: {
+  listId: string;
+  hooks: VilHooks[];
+  vlistContext: VlistContext;
+  next: HTMLAnchorElement;
+  triggers: NodeListOf<Element>;
+}): Promise<void> {
+  const { listId, hooks, vlistContext: context } = args;
+  let { triggers, next } = args;
 
-  const observer = new IntersectionObserver(async (entries) => {
-    if (entries.every((entry) => !entry.isIntersecting)) {
+  while (true) {
+    if (triggers.length === 0) {
       return;
     }
 
-    observer.disconnect();
+    const resolver = Promise.withResolvers();
 
-    const response = await fetch(next.href, { redirect: "follow" });
-    const html = await response.text();
-    const newDoc = new DOMParser().parseFromString(html, "text/html");
+    const observer = new IntersectionObserver(async (entries) => {
+      if (entries.every((entry) => !entry.isIntersecting)) {
+        return;
+      }
 
-    const newContainer = newDoc.querySelector(`[data-vil-container="${listId}"]`);
-    if (newContainer === null) {
-      return;
-    }
+      observer.disconnect();
 
-    const newRoot = newContainer.parentElement;
-    if (newRoot === null) {
-      console.warn("No parent found for new container");
-      return;
-    }
+      const response = await fetch(next.href, { redirect: "follow" });
+      const html = await response.text();
+      const newDoc = new DOMParser().parseFromString(html, "text/html");
 
-    const newTriggers = newRoot.querySelectorAll(`[data-vil-trigger="${listId}"]`);
+      const newContainer = newDoc.querySelector(`[data-vil-container="${listId}"]`);
+      if (newContainer === null) {
+        return;
+      }
+
+      const newRoot = newContainer.parentElement;
+      if (newRoot === null) {
+        console.warn("No parent found for new container");
+        return;
+      }
+
+      const newTriggers = newRoot.querySelectorAll(`[data-vil-trigger="${listId}"]`);
+      for (const trigger of Array.from(triggers)) {
+        trigger.removeAttribute("data-vil-trigger");
+      }
+      triggers = newTriggers;
+
+      triggerChildLoad(listId, hooks, newDoc);
+
+      const newChildren = Array.from(newContainer.children);
+
+      const htmlElChildren = newChildren.filter((child) => child instanceof HTMLElement);
+
+      if (htmlElChildren.length !== newChildren.length) {
+        console.error(newChildren);
+        throw new Error("Non-HTMLElement children found");
+      }
+
+      appendChildren(context, htmlElChildren);
+
+      const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
+      if (newNext === null) {
+        next.remove();
+        return;
+      }
+      next.replaceWith(newNext);
+      next = newNext;
+      resolver.resolve(undefined);
+    });
 
     for (const trigger of Array.from(triggers)) {
-      trigger.removeAttribute("data-vil-trigger");
+      observer.observe(trigger);
     }
 
-    triggerChildLoad(listId, hooks, newDoc);
-
-    const newChildren = Array.from(newContainer.children);
-
-    const htmlElChildren = newChildren.filter((child) => child instanceof HTMLElement);
-
-    if (htmlElChildren.length !== newChildren.length) {
-      console.error(newChildren);
-      throw new Error("Non-HTMLElement children found");
-    }
-
-    appendChildren(context, htmlElChildren);
-
-    const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
-    if (newNext === null) {
-      next.remove();
-      return;
-    }
-    next.replaceWith(newNext);
-
-    infiniteScroll(listId, hooks, context, newNext, newTriggers);
-  });
-
-  for (const trigger of Array.from(triggers)) {
-    observer.observe(trigger);
+    await resolver.promise;
   }
 }
 
@@ -120,8 +129,12 @@ function initContainer(container: Element, cache: Cache | null): InitResult {
   });
 
   if (next !== null) {
-    requestIdleCallback(() => {
-      infiniteScroll(listId, hooks, vList.context, next, triggers);
+    infiniteScroll({
+      listId,
+      hooks,
+      vlistContext: vList.context,
+      next,
+      triggers,
     });
   }
 
