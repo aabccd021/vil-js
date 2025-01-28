@@ -36,7 +36,7 @@ async function infiniteScroll(args: {
   next: HTMLAnchorElement;
   triggers: NodeListOf<Element>;
 }): Promise<void> {
-  const { listId, hooks, vlistContext: context } = args;
+  const { listId, hooks, vlistContext } = args;
   let { triggers, next } = args;
 
   while (true) {
@@ -85,7 +85,7 @@ async function infiniteScroll(args: {
         throw new Error("Non-HTMLElement children found");
       }
 
-      appendChildren(context, htmlElChildren);
+      appendChildren(vlistContext, htmlElChildren);
 
       const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
       if (newNext === null) {
