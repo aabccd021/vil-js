@@ -144,7 +144,7 @@ function initContainer(container: Element, cache: Cache | null): InitResult {
 let lists: InitResult[];
 let hooks: VilHooks[];
 
-async function pageLoad(): Promise<void> {
+async function loadVil(): Promise<void> {
   const containers = document.body.querySelectorAll("[data-vil-container]");
 
   const moduleLoadPromises = Array.from(document.querySelectorAll("script"))
@@ -177,7 +177,7 @@ async function pageLoad(): Promise<void> {
   lists = Array.from(containers).map((container) => initContainer(container, cache));
 }
 
-function pageUnload(): void {
+function unloadVil(): void {
   const cache: Cache = {};
   for (const { vList, container, listId } of lists) {
     const virtuaSnapshot = vList.context.store.$getCacheSnapshot();
@@ -204,7 +204,14 @@ function pageUnload(): void {
   document.head.appendChild(cacheMeta);
 }
 
-export const freezeHooks = Promise.resolve({
-  pageLoad,
-  pageUnload,
-});
+type FreezeHooks = {
+  pageLoad: () => unknown;
+  pageUnload: () => unknown;
+};
+
+export function freezeHooks(): FreezeHooks {
+  return {
+    pageLoad: loadVil,
+    pageUnload: unloadVil,
+  };
+}
