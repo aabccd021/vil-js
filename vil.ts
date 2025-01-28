@@ -204,7 +204,7 @@ function pageUnload(): void {
   document.head.appendChild(cacheMeta);
 }
 
-export const freezeHooks = {
+export const freezeHooks = Promise.resolve({
   pageLoad,
   pageUnload,
-};
+});
