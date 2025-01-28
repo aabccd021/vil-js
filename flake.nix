@@ -21,8 +21,8 @@
       };
 
       freezeJs = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/aabccd021/freeze-js/refs/heads/main/freeze.ts";
-        hash = "sha256-tW5NnLmka1vHLd/TNTZlXniQv36xBm6XZWL2UCp9Sqw=";
+        url = "https://raw.githubusercontent.com/aabccd021/freeze-js/70d667354a2a3f37d68f4867e9ddb0d81ed0b5c5/freeze.ts";
+        hash = "sha256-7xpzQcWFqKWgm1qwvdxsAhdPGoe62yik8yGBHZAU6fQ=";
       };
 
       serve = pkgs.writeShellApplication {
