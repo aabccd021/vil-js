@@ -26,25 +26,28 @@
       };
 
       freezePageJs = pkgs.fetchurl {
-        url = "https://unpkg.com/freeze-page-js@0.0.3";
+        url = "https://unpkg.com/freeze-page-js";
         hash = "sha256-9ZHg3T7Gu+ig7PYfdW9a7oKEzpPnDElbJ5rD6y+g2SI=";
       };
 
       serve = pkgs.writeShellApplication {
         name = "serve";
         text = ''
-          root=$(git rev-parse --show-toplevel)
+          trap 'cd $(pwd)' EXIT
+          repo_root=$(git rev-parse --show-toplevel)
+          cd "$repo_root" || exit
+
           cp -L ${exportHookJs} ./fixtures/export-hook.js
           chmod 600 ./fixtures/export-hook.js
           cp -L ${freezePageJs} ./fixtures/freeze-page.js
           chmod 600 ./fixtures/freeze-page.js
-          ${pkgs.esbuild}/bin/esbuild "$root/vil.ts" \
+          ${pkgs.esbuild}/bin/esbuild ./vil.ts \
             --bundle \
             --target=es6 \
             --format=esm \
             --minify \
-            --outfile="$root/fixtures/vil.js" \
-            --servedir="$root/fixtures" \
+            --outfile=./fixtures/vil.js \
+            --servedir=./fixtures \
             --sourcemap \
             --watch
         '';
