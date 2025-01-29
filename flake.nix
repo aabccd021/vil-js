@@ -33,19 +33,22 @@
             --bundle \
             --target=es6 \
             --format=esm \
+            --minify \
             --sourcemap \
             --outfile="$root/fixtures/freeze.js"
           ${pkgs.esbuild}/bin/esbuild "$root/fixtures/hook.ts" \
             --bundle \
             --target=es2022 \
             --format=esm \
+            --minify \
             --sourcemap \
             --outfile="$root/fixtures/hook.js"
           ${pkgs.esbuild}/bin/esbuild "$root/vil.ts" \
             --bundle \
             --target=es6 \
             --format=esm \
-            --outdir="$root/fixtures" \
+            --minify \
+            --outfile="$root/fixtures/vil.js" \
             --servedir="$root/fixtures" \
             --sourcemap \
             --watch
