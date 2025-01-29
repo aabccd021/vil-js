@@ -1,8 +1,19 @@
 {
   "name": "vil-js",
-  "private": true,
   "version": "0.0.1",
-  "type": "module",
+  "description": "Virtualized Infinite List",
+  "author": "aabccd021",
+  "license": "MIT",
+  "files": ["dist"],
+  "main": "dist/vil.es6.min.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aabccd021/vil-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aabccd021/vil-js/issues"
+  },
+  "homepage": "https://github.com/aabccd021/vil-js#readme",
   "dependencies": {
     "vanilla-virtua": "github:aabccd021/vanilla-virtua"
   },

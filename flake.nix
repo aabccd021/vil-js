@@ -50,6 +50,42 @@
         '';
       };
 
+      publish = pkgs.writeShellApplication {
+        name = "publish";
+        text = ''
+          trap 'cd $(pwd)' EXIT
+          repo_root=$(git rev-parse --show-toplevel)
+          cd "$repo_root" || exit
+
+          nix flake check
+
+          NPM_TOKEN=''${NPM_TOKEN:-}
+          if [ -n "$NPM_TOKEN" ]; then
+            npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          fi
+
+          npm install
+          rm -rf dist
+          mkdir dist
+
+          ${pkgs.esbuild}/bin/esbuild ./vil.ts \
+            --bundle \
+            --target=es6 \
+            --format=esm \
+            --minify \
+            --outfile="./dist/vil.es6.min.js"
+
+          ${pkgs.esbuild}/bin/esbuild ./vil.ts \
+            --bundle \
+            --format=esm \
+            --minify \
+            --outfile="./dist/vil.min.js"
+
+          npm publish --dry-run
+          npm publish || true
+        '';
+      };
+
       check = pkgs.writeShellApplication {
         name = "check";
         text = ''
@@ -66,6 +102,7 @@
       packages = {
         check = check;
         formatting = treefmtEval.config.build.check self;
+        publish = publish;
       };
 
       gcroot = packages // {
@@ -105,6 +142,11 @@
       apps.x86_64-linux.serve = {
         type = "app";
         program = "${serve}/bin/serve";
+      };
+
+      apps.x86_64-linux.publish = {
+        type = "app";
+        program = "${publish}/bin/publish";
       };
 
     };
