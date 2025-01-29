@@ -30,9 +30,8 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 fixtures/vil.js
-fixtures/hook.js*
-fixtures/freeze.js
-fixtures/freeze.js*
+fixtures/export-hook.js
+fixtures/freeze-page.js
 result
 .gcroot
 

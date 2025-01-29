@@ -20,29 +20,24 @@
         settings.global.excludes = [ "LICENSE" "*.ico" ];
       };
 
-      freezeJs = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/aabccd021/freeze-js/063ebebfaedff17408a756b5c1c2b4d53434c691/freeze.ts";
-        hash = "sha256-odgnHsH3kjzsWm2KdOiRFko5WPPPx4FP/4q35XZAOso=";
+      exportHookJs = pkgs.fetchurl {
+        url = "https://unpkg.com/export-hook-js";
+        hash = "sha256-1+gDF8hDqxbR/ZodBi28qnHP0YLBpXl6vOdU+N/yA5I=";
+      };
+
+      freezePageJs = pkgs.fetchurl {
+        url = "https://unpkg.com/freeze-page-js@0.0.3";
+        hash = "sha256-9ZHg3T7Gu+ig7PYfdW9a7oKEzpPnDElbJ5rD6y+g2SI=";
       };
 
       serve = pkgs.writeShellApplication {
         name = "serve";
         text = ''
           root=$(git rev-parse --show-toplevel)
-          ${pkgs.esbuild}/bin/esbuild ${freezeJs} \
-            --bundle \
-            --target=es6 \
-            --format=esm \
-            --minify \
-            --sourcemap \
-            --outfile="$root/fixtures/freeze.js"
-          ${pkgs.esbuild}/bin/esbuild "$root/fixtures/hook.ts" \
-            --bundle \
-            --target=es2022 \
-            --format=esm \
-            --minify \
-            --sourcemap \
-            --outfile="$root/fixtures/hook.js"
+          cp -L ${exportHookJs} ./fixtures/export-hook.js
+          chmod 600 ./fixtures/export-hook.js
+          cp -L ${freezePageJs} ./fixtures/freeze-page.js
+          chmod 600 ./fixtures/freeze-page.js
           ${pkgs.esbuild}/bin/esbuild "$root/vil.ts" \
             --bundle \
             --target=es6 \
@@ -107,6 +102,10 @@
         };
       };
 
+      apps.x86_64-linux.serve = {
+        type = "app";
+        program = "${serve}/bin/serve";
+      };
 
     };
 }

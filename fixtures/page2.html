@@ -3,22 +3,22 @@
   <head>
     <title>Page 1</title>
     <link rel="stylesheet" href="/style.css" />
-    <script src="/freeze.js" type="module"></script>
+    <script src="/freeze-page.js" type="module"></script>
     <script
       src="/vil.js"
       type="module"
-      data-hook-freeze-page-load="load"
-      data-hook-freeze-page-unload="unload"
+      data-export-hook-freeze-page-load="load"
+      data-export-hook-freeze-page-unload="unload"
     ></script>
     <script
       src="/init-element.js"
       type="module"
-      data-hook-vil-items-append="load"
-      data-hook-vil-list-unload="unload"
+      data-export-hook-vil-items-append="load"
+      data-export-hook-vil-list-unload="unload"
     ></script>
-    <script src="/hook.js" type="module"></script>
+    <script src="/export-hook.js" type="module"></script>
   </head>
-  <body data-freeze>
+  <body data-freeze-page>
     <h1>Page 1</h1>
     <div class="root">
       <ul class="container" data-vil-container="main-list">
