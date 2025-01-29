@@ -4,8 +4,19 @@
     <title>Page 1</title>
     <link rel="stylesheet" href="/style.css" />
     <script src="/freeze.js" type="module"></script>
-    <script src="/vil.js" type="module"></script>
-    <script src="/init-element.js" type="module"></script>
+    <script
+      src="/vil.js"
+      type="module"
+      data-export-freeze-page-load="load"
+      data-export-freeze-page-unload="unload"
+    ></script>
+    <script
+      src="/init-element.js"
+      type="module"
+      data-export-vil-items-append="load"
+      data-export-vil-list-unload="unload"
+    ></script>
+    <script src="/hook.js" type="module"></script>
   </head>
   <body data-freeze>
     <h1>Page 1</h1>

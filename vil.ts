@@ -19,19 +19,24 @@ type InitResult = {
   listId: string;
 };
 
-type VilHooks = Record<string, (...args: unknown[]) => unknown>;
+type Hooks = [string, (...args: unknown[]) => unknown];
 
-function triggerChildLoad(listId: string, hooks: VilHooks[], document?: Document): void {
-  for (const hook of Object.values(hooks)) {
-    if ("childLoad" in hook && typeof hook["childLoad"] === "function") {
-      hook["childLoad"]({ listId, document });
+function invokeHooks(hooks: Hooks[], name: string, args: unknown): void {
+  for (const [hookName, fn] of hooks) {
+    if (hookName !== name) {
+      continue;
+    }
+    try {
+      fn(args);
+    } catch (e) {
+      console.error(`Error in ${name} hook:`, e);
     }
   }
 }
 
 async function infiniteScroll(args: {
   listId: string;
-  hooks: VilHooks[];
+  hooks: Hooks[];
   vlistContext: VlistContext;
   next: HTMLAnchorElement;
   triggers: NodeListOf<Element>;
@@ -74,7 +79,7 @@ async function infiniteScroll(args: {
       }
       triggers = newTriggers;
 
-      triggerChildLoad(listId, hooks, newDoc);
+      invokeHooks(hooks, "VilItemsAppend", { listId, document: newDoc });
 
       const newChildren = Array.from(newContainer.children);
 
@@ -118,7 +123,7 @@ function initContainer(container: Element, cache: Cache | null): InitResult {
   const triggers = container.querySelectorAll(`[data-vil-trigger="${listId}"]`);
   const next = document.body.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
 
-  triggerChildLoad(listId, hooks);
+  invokeHooks(hooks, "VilItemsAppend", { listId });
 
   const listCache = cache?.[listId];
 
@@ -142,33 +147,32 @@ function initContainer(container: Element, cache: Cache | null): InitResult {
 }
 
 let lists: InitResult[];
-let hooks: VilHooks[];
+let hooks: Hooks[] = [];
 
-async function loadVil(): Promise<void> {
+export async function load(): Promise<void> {
   const containers = document.body.querySelectorAll("[data-vil-container]");
 
-  const moduleLoadPromises = Array.from(document.querySelectorAll("script"))
+  const hookLoadPromises = Array.from(document.querySelectorAll("script"))
     .filter((script) => script.type === "module")
-    .map((script) => import(script.src));
+    .flatMap(async (script) => {
+      const module = await import(script.src);
+      if (!("hooks" in module && Array.isArray(module.hooks))) {
+        return [];
+      }
+      return module.hooks as Hooks[];
+    });
 
-  const moduleLoadResults = await Promise.allSettled(moduleLoadPromises);
+  const hookLoadResultsNested = await Promise.allSettled(hookLoadPromises);
 
-  for (const moduleLoadResult of moduleLoadResults) {
-    if (moduleLoadResult.status === "rejected") {
-      console.error(moduleLoadResult.reason);
+  for (const hookLoadResult of hookLoadResultsNested) {
+    if (hookLoadResult.status === "rejected") {
+      console.error(hookLoadResult.reason);
     }
   }
 
-  const modules = moduleLoadResults
-    .filter((moduleLoadResult) => moduleLoadResult.status === "fulfilled")
-    .map((moduleLoadResult) => moduleLoadResult.value);
-
-  hooks = [];
-  for (const module of modules) {
-    if ("vilHooks" in module && typeof module.vilHooks === "object" && module.vilHooks !== null) {
-      hooks.push(module.vilHooks);
-    }
-  }
+  hooks = hookLoadResultsNested
+    .filter((hookLoadResults) => hookLoadResults.status === "fulfilled")
+    .flatMap((hookLoadResults) => hookLoadResults.value);
 
   const cacheMeta = document.querySelector<HTMLMetaElement>('meta[name="vil-cache"]');
   cacheMeta?.remove();
@@ -177,7 +181,7 @@ async function loadVil(): Promise<void> {
   lists = Array.from(containers).map((container) => initContainer(container, cache));
 }
 
-function unloadVil(): void {
+export function unload(): void {
   const cache: Cache = {};
   for (const { vList, container, listId } of lists) {
     const virtuaSnapshot = vList.context.store.$getCacheSnapshot();
@@ -192,26 +196,10 @@ function unloadVil(): void {
     cache[listId] = { virtuaSnapshot, scrollOffset };
   }
 
-  for (const hook of hooks) {
-    if ("childUnload" in hook && typeof hook["childUnload"] === "function") {
-      hook["childUnload"]();
-    }
-  }
+  invokeHooks(hooks, "VilListUnload", {});
 
   const cacheMeta = document.createElement("meta");
   cacheMeta.name = "vil-cache";
   cacheMeta.content = JSON.stringify(cache);
   document.head.appendChild(cacheMeta);
-}
-
-type FreezeHooks = {
-  pageLoad: () => unknown;
-  pageUnload: () => unknown;
-};
-
-export function freezeHooks(): FreezeHooks {
-  return {
-    pageLoad: loadVil,
-    pageUnload: unloadVil,
-  };
 }

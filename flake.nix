@@ -21,8 +21,8 @@
       };
 
       freezeJs = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/aabccd021/freeze-js/5eba15f910303225836678e2a4e84ca6aedd74a6/freeze.ts";
-        hash = "sha256-eSVtUegDJA3w5fC9pYVpk/QUFfKhs7l/2kJ7jYae+w0=";
+        url = "https://raw.githubusercontent.com/aabccd021/freeze-js/063ebebfaedff17408a756b5c1c2b4d53434c691/freeze.ts";
+        hash = "sha256-odgnHsH3kjzsWm2KdOiRFko5WPPPx4FP/4q35XZAOso=";
       };
 
       serve = pkgs.writeShellApplication {
@@ -35,6 +35,12 @@
             --format=esm \
             --sourcemap \
             --outfile="$root/fixtures/freeze.js"
+          ${pkgs.esbuild}/bin/esbuild "$root/fixtures/hook.ts" \
+            --bundle \
+            --target=es2022 \
+            --format=esm \
+            --sourcemap \
+            --outfile="$root/fixtures/hook.js"
           ${pkgs.esbuild}/bin/esbuild "$root/vil.ts" \
             --bundle \
             --target=es6 \
