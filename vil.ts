@@ -110,42 +110,6 @@ async function infiniteScroll(args: {
   }
 }
 
-function initContainer(container: Element, cache: Cache | null): InitResult {
-  if (!(container instanceof HTMLElement)) {
-    throw new Error("Container is not an HTMLElement");
-  }
-
-  const listId = container.dataset["vilContainer"];
-  if (listId === undefined) {
-    throw new Error("List ID not found");
-  }
-
-  const triggers = container.querySelectorAll(`[data-vil-trigger="${listId}"]`);
-  const next = document.body.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
-
-  invokeHooks(hooks, "VilItemsAppend", { listId });
-
-  const listCache = cache?.[listId];
-
-  const vList = vListInit({
-    container,
-    cache: listCache?.virtuaSnapshot,
-    scrollOffset: listCache?.scrollOffset,
-  });
-
-  if (next !== null) {
-    infiniteScroll({
-      listId,
-      hooks,
-      vlistContext: vList.context,
-      next,
-      triggers,
-    });
-  }
-
-  return { vList, container, listId };
-}
-
 let lists: InitResult[];
 let hooks: Hooks[] = [];
 
@@ -178,7 +142,45 @@ export async function load(): Promise<void> {
   cacheMeta?.remove();
   const cache = JSON.parse(cacheMeta?.content ?? "null");
 
-  lists = Array.from(containers).map((container) => initContainer(container, cache));
+  lists = [];
+
+  for (const container of Array.from(containers)) {
+    if (!(container instanceof HTMLElement)) {
+      console.error("Container is not an HTMLElement");
+      continue;
+    }
+
+    const listId = container.dataset["vilContainer"];
+    if (listId === undefined) {
+      console.error("List ID not found");
+      continue;
+    }
+
+    const triggers = container.querySelectorAll(`[data-vil-trigger="${listId}"]`);
+    const next = document.body.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
+
+    invokeHooks(hooks, "VilItemsAppend", { listId });
+
+    const listCache = cache?.[listId];
+
+    const vList = vListInit({
+      container,
+      cache: listCache?.virtuaSnapshot,
+      scrollOffset: listCache?.scrollOffset,
+    });
+
+    if (next !== null) {
+      infiniteScroll({
+        listId,
+        hooks,
+        vlistContext: vList.context,
+        next,
+        triggers,
+      });
+    }
+
+    lists.push({ vList, container, listId });
+  }
 }
 
 export function unload(): void {
