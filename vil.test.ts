@@ -47,7 +47,12 @@ type Log = {
 };
 
 const click = async (page: Page, log: Log, text: string): Promise<void> => {
-  expect(log.consoleMessages).toEqual([]);
+  const consoleMessages = log.consoleMessages.filter(
+    (msg) => !msg.includes("https://firefox-source-docs.mozilla.org/performance/scroll-linked_effects.html"),
+  );
+  expect(consoleMessages).toEqual([]);
+  log.consoleMessages.length = 0;
+
   await expect(page.getByText(text)).toBeInViewport();
   await page.getByText(text).click();
   expect(log.consoleMessages).toEqual([`Clicked on ${text}`]);

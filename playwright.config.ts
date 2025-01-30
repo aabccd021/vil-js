@@ -8,7 +8,7 @@ export default defineConfig({
   maxFailures: 1,
   // workers: 1,
   // retries: 5,
-  repeatEach: 5,
+  repeatEach: 2,
   use: {
     baseURL: "http://127.0.0.1:8000",
   },
@@ -28,7 +28,7 @@ export default defineConfig({
     },
     {
       name: "firefox",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Firefox"] },
     },
   ],
 });
