@@ -35,22 +35,18 @@
       },
       "suspicious": {
         "all": true,
-        "noConsole": "off",
-        "noFocusedTests": "off"
+        "noConsole": "off"
       },
       "correctness": {
         "all": true
       },
       "nursery": {
-        "all": true,
-        "noProcessEnv": "off",
-        "noSecrets": "off"
+        "all": true
       },
       "style": {
         "all": true,
         "useNamingConvention": "off",
-        "noDefaultExport": "off",
-        "noNamespaceImport": "off"
+        "noDefaultExport": "off"
       }
     }
   }
