@@ -192,8 +192,6 @@ test("btm", async ({ page }) => {
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
 
-  await page.waitForTimeout(100);
-
   for (let i = 0; i < 30; i++) {
     await page.waitForTimeout(100);
     await page.mouse.wheel(0, 200);
