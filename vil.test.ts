@@ -87,6 +87,9 @@ test("bottom top", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
+  await page.getByText("Item 8").scrollIntoViewIfNeeded();
+  await page.getByText("Item 18").scrollIntoViewIfNeeded();
+
   await page.waitForTimeout(500);
   await page.mouse.wheel(0, 100);
   await scrollToBottom(scrollable);
