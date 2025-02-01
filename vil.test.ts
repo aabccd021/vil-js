@@ -146,18 +146,14 @@ test("middle", async ({ page }) => {
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
 
-  for (let i = 0; i < 2; i++) {
-    await page.waitForTimeout(50);
-    await page.mouse.wheel(0, 500);
-  }
-  // await scrollTo(scrollable, 1000);
+  await scroll(page, 1000);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 5");
   await click(page, log, "Item 6");
   await click(page, log, "Item 7");
   await expect(items.first()).toHaveText("Item 1");
-  await expect(items.last()).toHaveText("Item 9");
+  await expect(items.last()).toHaveText("Item 12");
 
   await page.getByText("Go to dynamic").click();
   await expect(page).toHaveTitle("Dynamic");
