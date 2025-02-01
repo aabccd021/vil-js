@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // const timeout = 1_000_000;
-const timeout = 15_000;
+const timeout = 10_000;
 
 export default defineConfig({
   fullyParallel: true,
