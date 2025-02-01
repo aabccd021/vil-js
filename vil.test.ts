@@ -90,7 +90,7 @@ test("bottom top", async ({ page }) => {
   await page.waitForTimeout(500);
   await page.mouse.wheel(0, 100);
   await scrollToBottom(scrollable);
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(100);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
@@ -104,7 +104,7 @@ test("bottom top", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(100);
   await page.mouse.wheel(0, 100);
   await scrollToBottom(scrollable);
 
@@ -120,7 +120,7 @@ test("bottom top", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(100);
   await page.mouse.wheel(0, 100);
   await scrollToBottom(scrollable);
 
@@ -148,7 +148,7 @@ test("middle", async ({ page }) => {
   const items = scrollable.getByRole("listitem");
 
   for (let i = 0; i < 2; i++) {
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(100);
     await page.mouse.wheel(0, 500);
   }
   // await scrollTo(scrollable, 1000);
@@ -194,7 +194,7 @@ test("btm", async ({ page }) => {
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
 
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(100);
 
   for (let i = 0; i < 30; i++) {
     await page.waitForTimeout(100);
@@ -372,7 +372,7 @@ test("reload", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(100);
   await page.mouse.wheel(0, 100);
   await scrollToBottom(scrollable);
 
