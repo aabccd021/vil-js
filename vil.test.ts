@@ -146,7 +146,7 @@ test("middle", async ({ page }) => {
   const items = scrollable.getByRole("listitem");
 
   for (let i = 0; i < 2; i++) {
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(50);
     await page.mouse.wheel(0, 500);
   }
   // await scrollTo(scrollable, 1000);
@@ -171,7 +171,7 @@ test("middle", async ({ page }) => {
   await expect(items.last()).toHaveText("Item 12");
 
   for (let i = 0; i < 10; i++) {
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(50);
     await page.mouse.wheel(0, 100);
   }
   await scrollToBottom(scrollable);
