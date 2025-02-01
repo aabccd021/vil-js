@@ -69,13 +69,14 @@ const initLog = (page: Page): Log => {
 };
 
 const scroll = async (page: Page, pixels: number): Promise<void> => {
-  const scrollDelta = 100;
+  const scrollDeltaAbs = 100;
+  const scrollDelta = pixels > 0 ? scrollDeltaAbs : -scrollDeltaAbs;
   const iteration = pixels / scrollDelta;
   if (!Number.isInteger(iteration)) {
     throw new Error(`pixels must be a multiple of ${scrollDelta}`);
   }
   for (let i = 0; i < iteration; i++) {
-    await page.waitForTimeout(Math.ceil(scrollDelta / 50));
+    await page.waitForTimeout(Math.ceil(scrollDeltaAbs / 50));
     await page.mouse.wheel(0, scrollDelta);
   }
 };
@@ -106,7 +107,7 @@ test("bottom top", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
-  await scrollTo(scrollable, 0);
+  await scroll(page, -5200);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 0");
