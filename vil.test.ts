@@ -63,14 +63,14 @@ const initLog = (page: Page): Log => {
 };
 
 const scroll = async (page: Page, pixels: number): Promise<void> => {
-  const scrollDeltaAbs = 100;
+  const scrollDeltaAbs = 50;
   const scrollDelta = pixels > 0 ? scrollDeltaAbs : -scrollDeltaAbs;
   const iteration = pixels / scrollDelta;
   if (!Number.isInteger(iteration)) {
     throw new Error(`pixels must be a multiple of ${scrollDelta}`);
   }
   for (let i = 0; i < iteration; i++) {
-    await page.waitForTimeout(Math.ceil(scrollDeltaAbs / 50));
+    await page.waitForTimeout(2);
     await page.mouse.wheel(0, scrollDelta);
   }
 };
