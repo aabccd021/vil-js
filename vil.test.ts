@@ -69,9 +69,10 @@ const initLog = (page: Page): Log => {
 };
 
 const scroll = async (page: Page, pixels: number): Promise<void> => {
-  for (let i = 0; i < pixels / 100; i++) {
+  const scrollDelta = 100;
+  for (let i = 0; i < pixels / scrollDelta; i++) {
     await page.waitForTimeout(50);
-    await page.mouse.wheel(0, 100);
+    await page.mouse.wheel(0, scrollDelta);
   }
 };
 
