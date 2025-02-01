@@ -70,7 +70,7 @@ const scroll = async (page: Page, pixels: number): Promise<void> => {
     throw new Error(`pixels must be a multiple of ${scrollDelta}`);
   }
   for (let i = 0; i < iteration; i++) {
-    await page.waitForTimeout(2);
+    await page.waitForTimeout(1);
     await page.mouse.wheel(0, scrollDelta);
   }
 };
