@@ -34,19 +34,13 @@ const scrollToBottom = (scrollable: Locator): Promise<void> => {
   });
 };
 
-const scrollTo = (scrollable: Locator, offset: number): Promise<void> => {
-  return scrollable.evaluate((e, offset) => {
-    e.scrollTop = offset;
-  }, offset);
-};
-
 type Log = {
   consoleMessages: string[];
   pageerrors: Error[];
 };
 
 const click = async (page: Page, log: Log, text: string): Promise<void> => {
-  // expect(log.consoleMessages).toEqual([]);
+  expect(log.consoleMessages).toEqual([]);
   log.consoleMessages.length = 0;
 
   await expect(page.getByText(text)).toBeInViewport();
