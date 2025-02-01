@@ -5,7 +5,7 @@ const timeout = 15_000;
 
 export default defineConfig({
   fullyParallel: true,
-  // maxFailures: 1,
+  maxFailures: 1,
   workers: 1,
   // retries: 5,
   // repeatEach: 2,
