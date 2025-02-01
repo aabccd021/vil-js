@@ -63,7 +63,7 @@ const initLog = (page: Page): Log => {
 };
 
 const scroll = async (page: Page, pixels: number): Promise<void> => {
-  const scrollDeltaAbs = 50;
+  const scrollDeltaAbs = 100;
   const scrollDelta = pixels > 0 ? scrollDeltaAbs : -scrollDeltaAbs;
   const iteration = pixels / scrollDelta;
   if (!Number.isInteger(iteration)) {
@@ -101,7 +101,7 @@ test("bottom top", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
-  await scroll(page, -5050);
+  await scroll(page, -5100);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 0");
@@ -115,7 +115,7 @@ test("bottom top", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
-  await scroll(page, -5050);
+  await scroll(page, -5100);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 0");
@@ -129,7 +129,7 @@ test("bottom top", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
-  await scroll(page, -5050);
+  await scroll(page, -5100);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 0");
