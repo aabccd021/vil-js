@@ -209,11 +209,7 @@ test("middle", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 1");
   await expect(items.last()).toHaveText("Item 12");
 
-  for (let i = 0; i < 10; i++) {
-    await page.waitForTimeout(50);
-    await page.mouse.wheel(0, 100);
-  }
-  await scrollToBottom(scrollable);
+  await scroll(page, 5000);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
