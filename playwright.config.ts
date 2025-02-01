@@ -1,12 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // const timeout = 1_000_000;
-const timeout = 10_000;
+const timeout = 5_000;
 
 export default defineConfig({
   fullyParallel: true,
   maxFailures: 1,
-  workers: 1,
+  // workers: 1,
   // retries: 5,
   // repeatEach: 2,
   use: {
