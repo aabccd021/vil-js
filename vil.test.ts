@@ -170,19 +170,15 @@ test("little scroll", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 9");
 
-  // for (let i = 0; i < 10; i++) {
-  //   await page.waitForTimeout(50);
-  //   await page.mouse.wheel(0, 100);
-  // }
-  // await scrollToBottom(scrollable);
-  //
-  // await expect(page).toHaveTitle("Page 1");
-  // await click(page, log, "Item 29");
-  // await expect(items.first()).toHaveText("Item 22");
-  // await expect(items.last()).toHaveText("Item 29");
-  //
-  // expect(log.consoleMessages).toEqual([]);
-  // expectPageErrorsEmpty(log);
+  await scroll(page, 4800);
+
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 29");
+  await expect(items.first()).toHaveText("Item 22");
+  await expect(items.last()).toHaveText("Item 29");
+
+  expect(log.consoleMessages).toEqual([]);
+  expectPageErrorsEmpty(log);
 });
 
 test("middle", async ({ page }) => {
