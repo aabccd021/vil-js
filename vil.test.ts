@@ -19,8 +19,6 @@ const scrollToBottom = (scrollable: Locator): Promise<void> => {
           clearTimeout(timer);
         }
         timer = setTimeout(() => {
-          // console.log({ scrollTop: e.scrollTop, offsetHeight: (e as HTMLElement).offsetHeight, scrollHeight: e.scrollHeight });
-          console.log(e.scrollTop + (e as HTMLElement).offsetHeight, e.scrollHeight);
           if (e.scrollTop + (e as HTMLElement).offsetHeight >= e.scrollHeight - 1) {
             e.removeEventListener("scroll", onScroll);
             resolve();
@@ -62,7 +60,6 @@ const initLog = (page: Page): Log => {
   const pageerrors: Error[] = [];
 
   page.on("console", (msg) => consoleMessages.push(msg.text()));
-  page.on("console", (msg) => console.log(msg.text()));
   page.on("pageerror", (msg) => pageerrors.push(msg));
 
   return {
@@ -93,7 +90,6 @@ test("bottom top", async ({ page }) => {
   await page.waitForTimeout(500);
   await page.mouse.wheel(0, 100);
   await scrollToBottom(scrollable);
-  console.log("scroll to bottom");
   await page.waitForTimeout(2000);
 
   await expect(page).toHaveTitle("Page 1");
