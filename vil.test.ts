@@ -135,7 +135,7 @@ test("bottom top", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
-  await scrollTo(scrollable, 0);
+  await scroll(page, -5200);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 0");
