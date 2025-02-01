@@ -7,7 +7,7 @@ export default defineConfig({
   fullyParallel: true,
   maxFailures: 1,
   // workers: 1,
-  // retries: 2,
+  retries: 2,
   // repeatEach: 2,
   use: {
     baseURL: "http://127.0.0.1:8000",
@@ -28,7 +28,7 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         launchOptions: {
           ignoreDefaultArgs: ["--headless=old"],
-          // args: ["--headless"],
+          args: ["--headless"],
         },
       },
     },

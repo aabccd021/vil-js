@@ -139,7 +139,7 @@ test("bottom top", async ({ page }) => {
   expectPageErrorsEmpty(log);
 });
 
-test.only("little scroll", async ({ page }) => {
+test("little scroll", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
@@ -169,7 +169,7 @@ test.only("little scroll", async ({ page }) => {
   await click(page, log, "Item 4");
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 9");
-  //
+
   // for (let i = 0; i < 10; i++) {
   //   await page.waitForTimeout(50);
   //   await page.mouse.wheel(0, 100);
