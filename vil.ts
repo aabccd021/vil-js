@@ -1,20 +1,23 @@
 import {
   type CacheSnapshot,
-  type InitResult as VirtuaInitResult,
-  type Context as VlistContext,
-  appendChildren,
-  init as vListInit,
-} from "vanilla-virtua";
+  type Virtualizer,
+  appendItems,
+  dispose,
+  getCacheSnapshot,
+  getScrollOffset,
+  init as initVirtualizer,
+  scrollTo,
+} from "vanilla-virtua/virtualizer.ts";
 
 type ListCache = {
-  virtuaSnapshot: CacheSnapshot;
+  cacheSnapshot: CacheSnapshot;
   scrollOffset: number;
 };
 
 type Cache = Record<string, ListCache>;
 
 type InitResult = {
-  vList: VirtuaInitResult;
+  virt: Virtualizer;
   container: HTMLElement;
   listId: string;
 };
@@ -37,11 +40,11 @@ function invokeHooks(hooks: Hooks[], name: string, args: unknown): void {
 async function infiniteScroll(args: {
   listId: string;
   hooks: Hooks[];
-  vlistContext: VlistContext;
+  virt: Virtualizer;
   next: HTMLAnchorElement;
   triggers: NodeListOf<Element>;
 }): Promise<void> {
-  const { listId, hooks, vlistContext } = args;
+  const { listId, hooks, virt: virtualizer } = args;
   let { triggers, next } = args;
 
   while (true) {
@@ -67,13 +70,7 @@ async function infiniteScroll(args: {
         return;
       }
 
-      const newRoot = newContainer.parentElement;
-      if (newRoot === null) {
-        console.warn("No parent found for new container");
-        return;
-      }
-
-      const newTriggers = newRoot.querySelectorAll(`[data-vil-trigger="${listId}"]`);
+      const newTriggers = newContainer.querySelectorAll(`[data-vil-trigger="${listId}"]`);
       for (const trigger of Array.from(triggers)) {
         trigger.removeAttribute("data-vil-trigger");
       }
@@ -90,7 +87,7 @@ async function infiniteScroll(args: {
         throw new Error("Non-HTMLElement children found");
       }
 
-      appendChildren(vlistContext, htmlElChildren);
+      appendItems(virtualizer, htmlElChildren);
 
       const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
       if (newNext === null) {
@@ -150,6 +147,12 @@ export async function load(): Promise<void> {
       continue;
     }
 
+    const root = container.parentElement;
+    if (root === null) {
+      console.error("Root not found");
+      continue;
+    }
+
     const listId = container.dataset["vilContainer"];
     if (listId === undefined) {
       console.error("List ID not found");
@@ -163,39 +166,44 @@ export async function load(): Promise<void> {
 
     const listCache = cache?.[listId];
 
-    const vList = vListInit({
+    const virt = initVirtualizer({
       container,
-      cache: listCache?.virtuaSnapshot,
-      scrollOffset: listCache?.scrollOffset,
+      cache: listCache?.cacheSnapshot,
+      totalSizeStyle: "height",
+      offsetStyle: "top",
+      root,
     });
+
+    scrollTo(virt, listCache?.scrollOffset);
 
     if (next !== null) {
       infiniteScroll({
         listId,
         hooks,
-        vlistContext: vList.context,
+        virt,
         next,
         triggers,
       });
     }
 
-    lists.push({ vList, container, listId });
+    lists.push({ virt, container, listId });
   }
 }
 
 export function unload(): void {
   const cache: Cache = {};
-  for (const { vList, container, listId } of lists) {
-    const virtuaSnapshot = vList.context.store.$getCacheSnapshot();
-    const scrollOffset = vList.context.store.$getScrollOffset();
+  for (const { virt, container, listId } of lists) {
+    const cacheSnapshot = getCacheSnapshot(virt);
+    const scrollOffset = getScrollOffset(virt);
 
-    for (const child of vList.context.state.children) {
-      container.appendChild(child);
+    dispose(virt);
+
+    for (const item of virt.items) {
+      item.style.visibility = "visible";
+      container.appendChild(item);
     }
 
-    vList.dispose();
-
-    cache[listId] = { virtuaSnapshot, scrollOffset };
+    cache[listId] = { cacheSnapshot, scrollOffset };
   }
 
   invokeHooks(hooks, "VilListUnload", {});

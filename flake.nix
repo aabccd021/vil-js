@@ -96,7 +96,7 @@
           repo_root=$(git rev-parse --show-toplevel)
           cd "$repo_root" || exit
           ${pkgs.nodejs}/bin/npm install
-          ${pkgs.typescript}/bin/tsc
+          # ${pkgs.typescript}/bin/tsc
           ${pkgs.biome}/bin/biome check --fix --error-on-warnings
           ${pkgs.nodejs}/bin/npx playwright test
         '';

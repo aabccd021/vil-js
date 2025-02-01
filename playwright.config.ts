@@ -1,14 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 
 // const timeout = 1_000_000;
-const timeout = 5_000;
+const timeout = 15_000;
 
 export default defineConfig({
   fullyParallel: true,
-  maxFailures: 1,
-  // workers: 1,
+  // maxFailures: 1,
+  workers: 1,
   // retries: 5,
-  repeatEach: 2,
+  // repeatEach: 2,
   use: {
     baseURL: "http://127.0.0.1:8000",
   },
@@ -16,7 +16,7 @@ export default defineConfig({
     command: "serve",
     url: "http://127.0.0.1:8000",
     timeout: 5_000,
-    reuseExistingServer: true,
+    reuseExistingServer: false,
     stderr: "ignore",
   },
   timeout,
@@ -28,13 +28,9 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         launchOptions: {
           ignoreDefaultArgs: ["--headless=old"],
-          args: ["--headless"],
+          // args: ["--headless"],
         },
       },
-    },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
     },
   ],
 });

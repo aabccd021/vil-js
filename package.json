@@ -14,10 +14,10 @@
     "url": "https://github.com/aabccd021/vil-js/issues"
   },
   "homepage": "https://github.com/aabccd021/vil-js#readme",
-  "dependencies": {
-    "vanilla-virtua": "github:aabccd021/vanilla-virtua"
-  },
   "devDependencies": {
     "@playwright/test": "1.48.2"
+  },
+  "dependencies": {
+    "vanilla-virtua": "^0.0.3"
   }
 }
