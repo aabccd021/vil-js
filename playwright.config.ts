@@ -28,7 +28,7 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         launchOptions: {
           ignoreDefaultArgs: ["--headless=old"],
-          // args: ["--headless"],
+          args: ["--headless"],
         },
       },
     },
