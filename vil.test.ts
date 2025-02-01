@@ -68,6 +68,13 @@ const initLog = (page: Page): Log => {
   };
 };
 
+const scroll = async (page: Page, pixels: number): Promise<void> => {
+  for (let i = 0; i < pixels / 100; i++) {
+    await page.waitForTimeout(50);
+    await page.mouse.wheel(0, 100);
+  }
+};
+
 const expectPageErrorsEmpty = (log: Log): void => {
   const pageErrors = log.pageerrors.filter(
     (err) => err.message !== "ResizeObserver loop completed with undelivered notifications.",
@@ -87,10 +94,7 @@ test("bottom top", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  for (let i = 0; i < 50; i++) {
-    await page.waitForTimeout(50);
-    await page.mouse.wheel(0, 100);
-  }
+  await scroll(page, 5000);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
