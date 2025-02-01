@@ -146,27 +146,29 @@ test.only("little scroll", async ({ page }) => {
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
 
-  await scroll(page, 400);
+  await scroll(page, 200);
   await page.waitForTimeout(1000);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 5");
-  await click(page, log, "Item 6");
-  await click(page, log, "Item 7");
+  await click(page, log, "Item 1");
+  await click(page, log, "Item 2");
+  await click(page, log, "Item 3");
+  await click(page, log, "Item 4");
   await expect(items.first()).toHaveText("Item 1");
-  await expect(items.last()).toHaveText("Item 12");
+  await expect(items.last()).toHaveText("Item 9");
 
-  // await page.getByText("Go to dynamic").click();
-  // await expect(page).toHaveTitle("Dynamic");
-  //
-  // await page.getByText("Go to page 1").click();
-  //
-  // await expect(page).toHaveTitle("Page 1");
-  // await click(page, log, "Item 5");
-  // await click(page, log, "Item 6");
-  // await click(page, log, "Item 7");
-  // await expect(items.first()).toHaveText("Item 1");
-  // await expect(items.last()).toHaveText("Item 12");
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
+
+  await page.getByText("Go to page 1").click();
+
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 1");
+  await click(page, log, "Item 2");
+  await click(page, log, "Item 3");
+  await click(page, log, "Item 4");
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 9");
   //
   // for (let i = 0; i < 10; i++) {
   //   await page.waitForTimeout(50);
