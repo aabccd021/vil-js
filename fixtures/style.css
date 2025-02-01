@@ -20,8 +20,6 @@ li {
   border-bottom: 1px solid #ccc;
   width: 100%;
   left: 0;
-  visibility: visible;
-  position: absolute;
 }
 
 /* reset ul */

@@ -166,6 +166,17 @@ export async function load(): Promise<void> {
 
     const listCache = cache?.[listId];
 
+    if (listCache !== undefined) {
+      for (const item of Array.from(container.children)) {
+        if (!(item instanceof HTMLElement)) {
+          console.error("Item is not an HTMLElement");
+          continue;
+        }
+        item.style.visibility = "visible";
+        item.style.position = "absolute";
+      }
+    }
+
     const virt = initVirtualizer({
       container,
       cache: listCache?.cacheSnapshot,
