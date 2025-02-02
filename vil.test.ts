@@ -460,6 +460,9 @@ test("reload", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 0, 0, 3, 7);
+
+  expect(log.consoleMessages).toEqual([]);
+  expectPageErrorsEmpty(log);
 });
 
 test("reload click", async ({ page }) => {
@@ -478,4 +481,7 @@ test("reload click", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 00");
+
+  expect(log.consoleMessages).toEqual([]);
+  expectPageErrorsEmpty(log);
 });
