@@ -5,7 +5,7 @@ type Log = {
   pageerrors: Error[];
 };
 
-const click = async (page: Page, log: Log, text: string): Promise<void> => {
+const expectClickable = async (page: Page, log: Log, text: string): Promise<void> => {
   expect(log.consoleMessages).toEqual([]);
   log.consoleMessages.length = 0;
 
@@ -51,49 +51,49 @@ test("bottom top", async ({ page }) => {
   const log = initLog(page);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 29");
+  await expectClickable(page, log, "Item 29");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
   await scroll(page, -5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 29");
+  await expectClickable(page, log, "Item 29");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
   await scroll(page, -5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 29");
+  await expectClickable(page, log, "Item 29");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
   await scroll(page, -5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -156,9 +156,9 @@ test("middle", async ({ page }) => {
   await scroll(page, 1000);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 5");
-  await click(page, log, "Item 6");
-  await click(page, log, "Item 7");
+  await expectClickable(page, log, "Item 5");
+  await expectClickable(page, log, "Item 6");
+  await expectClickable(page, log, "Item 7");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 1");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 12");
 
@@ -168,16 +168,16 @@ test("middle", async ({ page }) => {
   await page.getByText("Go to page 1").click();
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 5");
-  await click(page, log, "Item 6");
-  await click(page, log, "Item 7");
+  await expectClickable(page, log, "Item 5");
+  await expectClickable(page, log, "Item 6");
+  await expectClickable(page, log, "Item 7");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 1");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 12");
 
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 29");
+  await expectClickable(page, log, "Item 29");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
@@ -192,7 +192,7 @@ test("btm", async ({ page }) => {
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 29");
+  await expectClickable(page, log, "Item 29");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
@@ -202,7 +202,7 @@ test("btm", async ({ page }) => {
   await page.getByText("Go to page 1").click();
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 29");
+  await expectClickable(page, log, "Item 29");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
@@ -215,7 +215,7 @@ test("back and forth dynamic", async ({ page }) => {
   const log = initLog(page);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -224,7 +224,7 @@ test("back and forth dynamic", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -233,7 +233,7 @@ test("back and forth dynamic", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -242,7 +242,7 @@ test("back and forth dynamic", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -251,7 +251,7 @@ test("back and forth dynamic", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -260,7 +260,7 @@ test("back and forth dynamic", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -269,7 +269,7 @@ test("back and forth dynamic", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -282,7 +282,7 @@ test("back and forth static", async ({ page }) => {
   const log = initLog(page);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -291,7 +291,7 @@ test("back and forth static", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -300,7 +300,7 @@ test("back and forth static", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -309,7 +309,7 @@ test("back and forth static", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -318,7 +318,7 @@ test("back and forth static", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -327,7 +327,7 @@ test("back and forth static", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -336,7 +336,7 @@ test("back and forth static", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
@@ -349,20 +349,20 @@ test("reload", async ({ page }) => {
   const log = initLog(page);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 29");
+  await expectClickable(page, log, "Item 29");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
   await page.reload();
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 0");
+  await expectClickable(page, log, "Item 0");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 });
