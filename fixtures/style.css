@@ -2,21 +2,21 @@
   color-scheme: dark;
   scrollbar-gutter: stable;
 }
-.root {
+.vil-root {
   display: block;
   overflow-y: auto;
   contain: strict;
   width: 80dvw;
   height: 80dvh;
 }
-.container {
+.vil-container {
   overflow-anchor: none;
   flex: none;
   position: relative;
   visibility: hidden;
   width: 100%;
 }
-li {
+.vil-item {
   border-bottom: 1px solid #ccc;
   width: 100%;
   left: 0;
