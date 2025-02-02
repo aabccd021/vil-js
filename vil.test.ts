@@ -5,12 +5,12 @@ type Log = {
   pageerrors: Error[];
 };
 
-const expectClickable = async (page: Page, log: Log, text: string, iteration?: number): Promise<void> => {
-  expect(log.consoleMessages, `iteration: ${iteration}`).toEqual([]);
+const expectClickable = async (page: Page, log: Log, text: string): Promise<void> => {
+  expect(log.consoleMessages).toEqual([]);
   log.consoleMessages.length = 0;
 
   await page.getByText(text).click();
-  expect(log.consoleMessages, `iteration: ${iteration}`).toEqual([`Clicked on ${text}`]);
+  expect(log.consoleMessages).toEqual([`Clicked on ${text}`]);
   log.consoleMessages.length = 0;
 };
 
@@ -34,19 +34,18 @@ async function expectRange(
   firstVisible: number,
   lastVisible: number,
   last: number,
-  iteration?: number,
 ): Promise<void> {
-  await expect(page.locator(".vil-item").first(), `iteration: ${iteration}`).toHaveText(itemText(first));
-  await expect(page.locator(".vil-item").last(), `iteration: ${iteration}`).toHaveText(itemText(last));
+  await expect(page.locator(".vil-item").first()).toHaveText(itemText(first));
+  await expect(page.locator(".vil-item").last()).toHaveText(itemText(last));
 
   for (let i = 0; i < firstVisible; i++) {
-    await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).not.toBeInViewport();
+    await expect(page.getByText(itemText(i))).not.toBeInViewport();
   }
   for (let i = firstVisible; i <= lastVisible; i++) {
-    await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).toBeInViewport();
+    await expect(page.getByText(itemText(i))).toBeInViewport();
   }
   for (let i = lastVisible + 1; i <= 29; i++) {
-    await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).not.toBeInViewport();
+    await expect(page.getByText(itemText(i))).not.toBeInViewport();
   }
 }
 
@@ -74,12 +73,12 @@ test.describe("full scroll", () => {
     await page.goto("/page1.html");
 
     for (let i = 0; i < 3; i++) {
-      await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-      await expectRange(page, 0, 0, 3, 7, i);
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 0, 0, 3, 7);
       await scroll(page, 5100);
 
-      await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-      await expectRange(page, 21, 25, 29, 29, i);
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 21, 25, 29, 29);
       await scroll(page, -5100);
     }
   });
@@ -89,12 +88,12 @@ test.describe("full scroll", () => {
     const log = initLog(page);
 
     for (let i = 0; i < 3; i++) {
-      await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-      await expectClickable(page, log, "Item 00", i);
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 00");
       await scroll(page, 5100);
 
-      await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-      await expectClickable(page, log, "Item 29", i);
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 29");
       await scroll(page, -5100);
     }
 
@@ -256,11 +255,11 @@ test.describe("scroll restoration", () => {
 
         for (let i = 0; i < 3; i++) {
           await page.getByText("Go to dynamic").click();
-          await expect(page, `iteration: ${i}`).toHaveTitle("Dynamic");
+          await expect(page).toHaveTitle("Dynamic");
 
           await page.getByText("Go to page 1").click();
-          await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-          await expectRange(page, 0, 0, 3, 7, i);
+          await expect(page).toHaveTitle("Page 1");
+          await expectRange(page, 0, 0, 3, 7);
         }
       });
 
@@ -273,11 +272,11 @@ test.describe("scroll restoration", () => {
 
         for (let i = 0; i < 3; i++) {
           await page.getByText("Go to dynamic").click();
-          await expect(page, `iteration: ${i}`).toHaveTitle("Dynamic");
+          await expect(page).toHaveTitle("Dynamic");
 
           await page.getByText("Go to page 1").click();
-          await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-          await expectClickable(page, log, "Item 00", i);
+          await expect(page).toHaveTitle("Page 1");
+          await expectClickable(page, log, "Item 00");
         }
 
         expect(log.consoleMessages).toEqual([]);
@@ -294,11 +293,11 @@ test.describe("scroll restoration", () => {
 
         for (let i = 0; i < 3; i++) {
           await page.getByText("Go to static").click();
-          await expect(page, `iteration: ${i}`).toHaveTitle("Static");
+          await expect(page).toHaveTitle("Static");
 
           await page.getByText("Go to page 1").click();
-          await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-          await expectRange(page, 0, 0, 3, 7, i);
+          await expect(page).toHaveTitle("Page 1");
+          await expectRange(page, 0, 0, 3, 7);
         }
 
         expect(log.consoleMessages).toEqual([]);
@@ -314,11 +313,11 @@ test.describe("scroll restoration", () => {
 
         for (let i = 0; i < 3; i++) {
           await page.getByText("Go to static").click();
-          await expect(page, `iteration: ${i}`).toHaveTitle("Static");
+          await expect(page).toHaveTitle("Static");
 
           await page.getByText("Go to page 1").click();
-          await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-          await expectClickable(page, log, "Item 00", i);
+          await expect(page).toHaveTitle("Page 1");
+          await expectClickable(page, log, "Item 00");
         }
 
         expect(log.consoleMessages).toEqual([]);
