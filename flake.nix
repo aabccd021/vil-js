@@ -29,18 +29,18 @@
       };
 
       exportHookJs = pkgs.fetchurl {
-        url = "https://unpkg.com/export-hook-js@latest/dist/export-hook.min.js";
-        hash = "sha256-CTWLe0m3q6mPdo2axuk2befyYA+5GuKnaGs4yY4awTM=";
+        url = "https://unpkg.com/export-hook-js@latest/dist/export-hook.esnext.js";
+        hash = "sha256-TvWKQ14VjHh7ca/zGvcTvfpanH8x7hQINKPb4hu9sOs=";
       };
 
       invokeHookJs = pkgs.fetchurl {
-        url = "https://unpkg.com/export-hook-js@latest/dist/invoke-hook.min.js";
-        hash = "sha256-h0bDrUE1YlwKIZex7C+aVtfsLhLawH5HKVArQ+lCw5Y=";
+        url = "https://unpkg.com/export-hook-js@latest/dist/invoke-hook.esnext.js";
+        hash = "sha256-QZ99/CdkZ8DtTWbYB8gjXkrJU7OmutioJerJO3ne+vA=";
       };
 
       freezePageJs = pkgs.fetchurl {
-        url = "https://unpkg.com/freeze-page-js";
-        hash = "sha256-9ZHg3T7Gu+ig7PYfdW9a7oKEzpPnDElbJ5rD6y+g2SI=";
+        url = "https://unpkg.com/freeze-page-js@latest/dist/freeze-page.esnext.js";
+        hash = "sha256-yBkUysjN0fPN8pyfiEMrnkp1GXmWPbvoJhMATx9iDho=";
       };
 
       serve = pkgs.writeShellApplication {
