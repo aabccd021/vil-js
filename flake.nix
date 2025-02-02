@@ -91,7 +91,6 @@
           --target=es6 \
           --format=esm \
           --minify \
-          --sourcemap \
           --outfile="$out/vil.min.js"
 
         ${pkgs.esbuild}/bin/esbuild ./vil.ts \
@@ -99,14 +98,12 @@
           --target=esnext \
           --format=esm \
           --minify \
-          --sourcemap \
           --outfile="$out/vil.esnext.min.js"
 
         ${pkgs.esbuild}/bin/esbuild ./vil.ts \
           --bundle \
           --target=esnext \
           --format=esm \
-          --sourcemap \
           --outfile="$out/vil.esnext.js"
 
       '';
