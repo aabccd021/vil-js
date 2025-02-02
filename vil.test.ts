@@ -78,12 +78,10 @@ test("bottom top", async ({ page }) => {
   for (let i = 0; i < 3; i++) {
     await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
     await expectRange(page, 0, 0, 3, 7, i);
-
     await scroll(page, 5100);
 
     await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
     await expectRange(page, 21, 26, 29, 29, i);
-
     await scroll(page, -5100);
   }
 });
@@ -95,12 +93,10 @@ test("bottom top click", async ({ page }) => {
   for (let i = 0; i < 3; i++) {
     await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
     await expectClickable(page, log, "Item 00", i);
-
     await scroll(page, 5100);
 
     await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
     await expectClickable(page, log, "Item 29", i);
-
     await scroll(page, -5100);
   }
 
