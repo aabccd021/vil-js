@@ -365,3 +365,8 @@ test.describe("reload resets", () => {
     expectPageErrorsEmpty(log);
   });
 });
+//
+// test("screenshot with javascript", async ({ page }) => {
+//   await page.goto("/single-page.html");
+//   await expect(page).toHaveScreenshot("snapshots/screenshot.png");
+// })

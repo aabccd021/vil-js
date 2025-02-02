@@ -29,8 +29,13 @@
       };
 
       exportHookJs = pkgs.fetchurl {
-        url = "https://unpkg.com/export-hook-js";
-        hash = "sha256-1+gDF8hDqxbR/ZodBi28qnHP0YLBpXl6vOdU+N/yA5I=";
+        url = "https://unpkg.com/export-hook-js@latest/dist/export-hook.min.js";
+        hash = "sha256-CTWLe0m3q6mPdo2axuk2befyYA+5GuKnaGs4yY4awTM=";
+      };
+
+      invokeHookJs = pkgs.fetchurl {
+        url = "https://unpkg.com/export-hook-js@latest/dist/invoke-hook.min.js";
+        hash = "sha256-h0bDrUE1YlwKIZex7C+aVtfsLhLawH5HKVArQ+lCw5Y=";
       };
 
       freezePageJs = pkgs.fetchurl {
@@ -48,9 +53,9 @@
           fi
 
           cp -L ${exportHookJs} ./stories/export-hook.js
-          chmod 600 ./stories/export-hook.js
+          cp -L ${invokeHookJs} ./stories/invoke-hook.js
           cp -L ${freezePageJs} ./stories/freeze-page.js
-          chmod 600 ./stories/freeze-page.js
+          chmod 600 ./stories/*.js
           ${pkgs.esbuild}/bin/esbuild ./vil.ts \
             --bundle \
             --target=esnext \
