@@ -118,12 +118,6 @@ test("little scroll", async ({ page }) => {
   await expect(page.getByText("Item 4")).toBeInViewport();
   await expect(page.getByText("Item 5")).not.toBeInViewport();
 
-  // await click(page, log, "Item 0");
-  // await click(page, log, "Item 1");
-  // await click(page, log, "Item 2");
-  // await click(page, log, "Item 3");
-  // await click(page, log, "Item 4");
-
   await page.getByText("Go to dynamic").click();
   await expect(page).toHaveTitle("Dynamic");
   await page.getByText("Go to page 1").click();
@@ -138,12 +132,17 @@ test("little scroll", async ({ page }) => {
   await expect(page.getByText("Item 4")).toBeInViewport();
   await expect(page.getByText("Item 5")).not.toBeInViewport();
 
-  await scroll(page, 4800);
+  await scroll(page, 5000);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(page, log, "Item 29");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
+  await expect(page.locator(".vil-item").first()).toHaveText("Item 21");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
+  await expect(page.getByText("Item 24")).not.toBeInViewport();
+  await expect(page.getByText("Item 25")).toBeInViewport();
+  await expect(page.getByText("Item 26")).toBeInViewport();
+  await expect(page.getByText("Item 27")).toBeInViewport();
+  await expect(page.getByText("Item 28")).toBeInViewport();
+  await expect(page.getByText("Item 29")).toBeInViewport();
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
