@@ -53,7 +53,7 @@
           chmod 600 ./stories/freeze-page.js
           ${pkgs.esbuild}/bin/esbuild ./vil.ts \
             --bundle \
-            --target=es6 \
+            --target=esnext \
             --format=esm \
             --minify \
             --outfile=./stories/vil.js \
