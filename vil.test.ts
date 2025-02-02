@@ -57,7 +57,7 @@ test("bottom top", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
-  const scrollable = await getScrollable(page);
+  const scrollable = page.locator(".root");
   const items = scrollable.getByRole("listitem");
 
   await expect(page).toHaveTitle("Page 1");
@@ -115,7 +115,7 @@ test("little scroll", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
-  const scrollable = await getScrollable(page);
+  const scrollable = page.locator(".root");
   const items = scrollable.getByRole("listitem");
 
   await scroll(page, 200);
@@ -157,7 +157,7 @@ test("middle", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
-  const scrollable = await getScrollable(page);
+  const scrollable = page.locator(".root");
   const items = scrollable.getByRole("listitem");
 
   await scroll(page, 1000);
@@ -196,7 +196,7 @@ test("btm", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
-  const scrollable = await getScrollable(page);
+  const scrollable = page.locator(".root");
   const items = scrollable.getByRole("listitem");
 
   await scroll(page, 5100);
@@ -224,7 +224,7 @@ test("back and forth dynamic", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
-  const scrollable = await getScrollable(page);
+  const scrollable = page.locator(".root");
   const items = scrollable.getByRole("listitem");
 
   await expect(page).toHaveTitle("Page 1");
@@ -294,7 +294,7 @@ test("back and forth static", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
-  const scrollable = await getScrollable(page);
+  const scrollable = page.locator(".root");
   const items = scrollable.getByRole("listitem");
 
   await expect(page).toHaveTitle("Page 1");
@@ -364,7 +364,7 @@ test("reload", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
-  const scrollable = await getScrollable(page);
+  const scrollable = page.locator(".root");
   const items = scrollable.getByRole("listitem");
 
   await expect(page).toHaveTitle("Page 1");
@@ -381,7 +381,7 @@ test("reload", async ({ page }) => {
   await page.reload();
 
   await expect(page).toHaveTitle("Page 1");
-  const scrollable2 = await getScrollable(page);
+  const scrollable2 = page.locator(".root");
   const items2 = scrollable2.getByRole("listitem");
   await click(page, log, "Item 0");
   await expect(items2.first()).toHaveText("Item 0");
