@@ -449,20 +449,33 @@ test("reload", async ({ page }) => {
   const log = initLog(page);
 
   await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 0, 0, 3, 7);
+
+  await scroll(page, 5100);
+
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 21, 26, 29, 29);
+
+  await page.reload();
+
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 0, 0, 3, 7);
+});
+
+test("reload click", async ({ page }) => {
+  await page.goto("/page1.html");
+  const log = initLog(page);
+
+  await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 00");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 00");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 07");
 
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 29");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
   await page.reload();
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 00");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 00");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 07");
 });
