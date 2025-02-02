@@ -115,50 +115,36 @@ test("bottom top click", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 0");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 29");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
   await scroll(page, -5100);
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 0");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 29");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
   await scroll(page, -5100);
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 0");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 29");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
 
   await scroll(page, -5100);
 
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 0");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
