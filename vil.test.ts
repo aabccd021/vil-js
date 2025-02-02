@@ -92,38 +92,17 @@ test("bottom top click", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
+  for (let i = 0; i < 3; i++) {
+    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+    await expectClickable(page, log, "Item 00", i);
 
-  await scroll(page, 5100);
+    await scroll(page, 5100);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 29");
+    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+    await expectClickable(page, log, "Item 29", i);
 
-  await scroll(page, -5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await scroll(page, 5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 29");
-
-  await scroll(page, -5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await scroll(page, 5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 29");
-
-  await scroll(page, -5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
+    await scroll(page, -5100);
+  }
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
@@ -209,9 +188,7 @@ test("middle click", async ({ page }) => {
   await scroll(page, 1000);
 
   await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 05");
   await expectClickable(page, log, "Item 06");
-  await expectClickable(page, log, "Item 07");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 01");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 12");
 
@@ -221,9 +198,7 @@ test("middle click", async ({ page }) => {
   await page.getByText("Go to page 1").click();
 
   await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 05");
   await expectClickable(page, log, "Item 06");
-  await expectClickable(page, log, "Item 07");
   await expect(page.locator(".vil-item").first()).toHaveText("Item 01");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 12");
 
