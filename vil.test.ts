@@ -29,7 +29,7 @@ function itemText(i: number): string {
   return `Item ${String(i).padStart(2, "0")}`;
 }
 
-async function expectRange(
+async function expectRendered(
   page: Page,
   first: number,
   firstVisible: number,
@@ -75,11 +75,11 @@ test.describe("full scroll", () => {
 
     for (let i = 0; i < 3; i++) {
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 0, 0, 3, 7);
+      await expectRendered(page, 0, 0, 3, 7);
       await scroll(page, 5200);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 21, 25, 29, 29);
+      await expectRendered(page, 21, 25, 29, 29);
       await scroll(page, -5200);
     }
   });
@@ -112,19 +112,19 @@ test.describe("scroll restoration", () => {
       await scroll(page, 200);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 0, 0, 4, 8);
+      await expectRendered(page, 0, 0, 4, 8);
 
       await page.getByText("Go to dynamic").click();
       await expect(page).toHaveTitle("Dynamic");
       await page.getByText("Go to page 1").click();
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 0, 0, 4, 8);
+      await expectRendered(page, 0, 0, 4, 8);
 
       await scroll(page, 5100);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 21, 25, 29, 29);
+      await expectRendered(page, 21, 25, 29, 29);
 
       expect(log.consoleMessages).toEqual([]);
       expectPageErrorsEmpty(log);
@@ -163,19 +163,19 @@ test.describe("scroll restoration", () => {
       await scroll(page, 1000);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 1, 5, 8, 12);
+      await expectRendered(page, 1, 5, 8, 12);
 
       await page.getByText("Go to dynamic").click();
       await expect(page).toHaveTitle("Dynamic");
       await page.getByText("Go to page 1").click();
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 1, 5, 8, 12);
+      await expectRendered(page, 1, 5, 8, 12);
 
       await scroll(page, 5200);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 22, 26, 29, 29);
+      await expectRendered(page, 22, 26, 29, 29);
     });
 
     test("items clickable", async ({ page }) => {
@@ -212,14 +212,14 @@ test.describe("scroll restoration", () => {
       await scroll(page, 5200);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 21, 25, 29, 29);
+      await expectRendered(page, 21, 25, 29, 29);
 
       await page.getByText("Go to dynamic").click();
       await expect(page).toHaveTitle("Dynamic");
       await page.getByText("Go to page 1").click();
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 21, 25, 29, 29);
+      await expectRendered(page, 21, 25, 29, 29);
     });
 
     test("items clickable", async ({ page }) => {
@@ -250,7 +250,7 @@ test.describe("scroll restoration", () => {
         await page.goto("/page1.html");
 
         await expect(page).toHaveTitle("Page 1");
-        await expectRange(page, 0, 0, 3, 7);
+        await expectRendered(page, 0, 0, 3, 7);
 
         for (let i = 0; i < 3; i++) {
           await page.getByText("Go to dynamic").click();
@@ -258,7 +258,7 @@ test.describe("scroll restoration", () => {
 
           await page.getByText("Go to page 1").click();
           await expect(page).toHaveTitle("Page 1");
-          await expectRange(page, 0, 0, 3, 7);
+          await expectRendered(page, 0, 0, 3, 7);
         }
       });
 
@@ -288,7 +288,7 @@ test.describe("scroll restoration", () => {
         const log = initLog(page);
 
         await expect(page).toHaveTitle("Page 1");
-        await expectRange(page, 0, 0, 3, 7);
+        await expectRendered(page, 0, 0, 3, 7);
 
         for (let i = 0; i < 3; i++) {
           await page.getByText("Go to static").click();
@@ -296,7 +296,7 @@ test.describe("scroll restoration", () => {
 
           await page.getByText("Go to page 1").click();
           await expect(page).toHaveTitle("Page 1");
-          await expectRange(page, 0, 0, 3, 7);
+          await expectRendered(page, 0, 0, 3, 7);
         }
 
         expect(log.consoleMessages).toEqual([]);
@@ -331,17 +331,17 @@ test.describe("reload resets", () => {
     await page.goto("/page1.html");
 
     await expect(page).toHaveTitle("Page 1");
-    await expectRange(page, 0, 0, 3, 7);
+    await expectRendered(page, 0, 0, 3, 7);
 
     await scroll(page, 5200);
 
     await expect(page).toHaveTitle("Page 1");
-    await expectRange(page, 21, 25, 29, 29);
+    await expectRendered(page, 21, 25, 29, 29);
 
     await page.reload();
 
     await expect(page).toHaveTitle("Page 1");
-    await expectRange(page, 0, 0, 3, 7);
+    await expectRendered(page, 0, 0, 3, 7);
   });
 
   test("items clickable", async ({ page }) => {
@@ -368,5 +368,6 @@ test.describe("reload resets", () => {
 
 test("screenshot with javascript", async ({ page }) => {
   await page.goto("/single-page.html");
+  await expectRendered(page, 0, 0, 4, 8);
   await expect(page).toHaveScreenshot("single-page.png");
 });
