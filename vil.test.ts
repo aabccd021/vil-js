@@ -78,8 +78,7 @@ test("bottom top", async ({ page }) => {
   await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 21");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
+  await expectRange(page, 21, 26, 29, 29);
 
   await scroll(page, -5100);
 
