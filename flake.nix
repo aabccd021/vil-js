@@ -71,6 +71,7 @@
         export XDG_CACHE_HOME="$(pwd)"
         export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
         export PATH=./node_modules/esbuild/bin:"$PATH"
+        cp -L ${./package.json} ./package.json
         cp -L ${./playwright.config.ts} ./playwright.config.ts
         cp -L ${./tsconfig.json} ./tsconfig.json
         cp -L ${./vil.ts} ./vil.ts
