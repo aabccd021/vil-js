@@ -6,34 +6,6 @@ const getScrollable = async (page: Page): Promise<Locator> => {
   return locator;
 };
 
-const scrollToBottom = (scrollable: Locator): Promise<void> => {
-  return scrollable.evaluate((e) => {
-    return new Promise<void>((resolve) => {
-      let timer: ReturnType<typeof setTimeout> | null = null;
-
-      const onScroll = (): void => {
-        // console.log({ scrollTop: e.scrollTop, offsetHeight: (e as HTMLElement).offsetHeight, scrollHeight: e.scrollHeight });
-        e.scrollTop = e.scrollHeight;
-
-        if (timer !== null) {
-          clearTimeout(timer);
-        }
-        timer = setTimeout(() => {
-          if (e.scrollTop + (e as HTMLElement).offsetHeight >= e.scrollHeight - 1) {
-            e.removeEventListener("scroll", onScroll);
-            resolve();
-          } else {
-            onScroll();
-          }
-        }, 50);
-      };
-      e.addEventListener("scroll", onScroll);
-
-      onScroll();
-    });
-  });
-};
-
 type Log = {
   consoleMessages: string[];
   pageerrors: Error[];
