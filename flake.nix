@@ -85,6 +85,7 @@
         cp -Lr ${nodeModules} ./node_modules
         cp -L ${./package.json} ./package.json
         cp -L ${./vil.ts} ./vil.ts
+
         ${pkgs.esbuild}/bin/esbuild ./vil.ts \
           --bundle \
           --target=es6 \
@@ -92,6 +93,7 @@
           --minify \
           --sourcemap \
           --outfile="$out/vil.min.js"
+
         ${pkgs.esbuild}/bin/esbuild ./vil.ts \
           --bundle \
           --target=esnext \
@@ -99,6 +101,14 @@
           --minify \
           --sourcemap \
           --outfile="$out/vil.esnext.min.js"
+
+        ${pkgs.esbuild}/bin/esbuild ./vil.ts \
+          --bundle \
+          --target=esnext \
+          --format=esm \
+          --sourcemap \
+          --outfile="$out/vil.esnext.js"
+
       '';
 
       publish = pkgs.writeShellApplication {
