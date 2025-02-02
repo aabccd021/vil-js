@@ -190,7 +190,7 @@ test("middle", async ({ page }) => {
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 1, 5, 8, 12);
 
-  await scroll(page, 5200);
+  await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 22, 26, 29, 29);
