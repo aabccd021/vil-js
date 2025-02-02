@@ -5,12 +5,12 @@ type Log = {
   pageerrors: Error[];
 };
 
-const expectClickable = async (page: Page, log: Log, text: string): Promise<void> => {
-  expect(log.consoleMessages).toEqual([]);
+const expectClickable = async (page: Page, log: Log, text: string, iteration?: number): Promise<void> => {
+  expect(log.consoleMessages, `iteration: ${iteration}`).toEqual([]);
   log.consoleMessages.length = 0;
 
   await page.getByText(text).click();
-  expect(log.consoleMessages).toEqual([`Clicked on ${text}`]);
+  expect(log.consoleMessages, `iteration: ${iteration}`).toEqual([`Clicked on ${text}`]);
   log.consoleMessages.length = 0;
 };
 
@@ -37,18 +37,19 @@ async function expectRange(
   firstVisible: number,
   lastVisible: number,
   last: number,
+  iteration?: number,
 ): Promise<void> {
-  await expect(page.locator(".vil-item").first()).toHaveText(itemText(first));
-  await expect(page.locator(".vil-item").last()).toHaveText(itemText(last));
+  await expect(page.locator(".vil-item").first(), `iteration: ${iteration}`).toHaveText(itemText(first));
+  await expect(page.locator(".vil-item").last(), `iteration: ${iteration}`).toHaveText(itemText(last));
 
   if (firstVisible - 1 <= 0) {
-    await expect(page.getByText(itemText(firstVisible - 1))).not.toBeInViewport();
+    await expect(page.getByText(itemText(firstVisible - 1)), `iteration: ${iteration}`).not.toBeInViewport();
   }
   for (let i = firstVisible; i <= lastVisible; i++) {
-    await expect(page.getByText(itemText(i))).toBeInViewport();
+    await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).toBeInViewport();
   }
   if (lastVisible + 1 >= 29) {
-    await expect(page.getByText(itemText(lastVisible + 1))).not.toBeInViewport();
+    await expect(page.getByText(itemText(lastVisible + 1)), `iteration: ${iteration}`).not.toBeInViewport();
   }
 }
 
@@ -74,38 +75,17 @@ const expectPageErrorsEmpty = (log: Log): void => {
 test("bottom top", async ({ page }) => {
   await page.goto("/page1.html");
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
+  for (let i = 0; i < 3; i++) {
+    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+    await expectRange(page, 0, 0, 3, 7, i);
 
-  await scroll(page, 5100);
+    await scroll(page, 5100);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 21, 26, 29, 29);
+    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+    await expectRange(page, 21, 26, 29, 29, i);
 
-  await scroll(page, -5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
-
-  await scroll(page, 5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 21, 26, 29, 29);
-
-  await scroll(page, -5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
-
-  await scroll(page, 5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 21, 26, 29, 29);
-
-  await scroll(page, -5100);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
+    await scroll(page, -5100);
+  }
 });
 
 test("bottom top click", async ({ page }) => {
