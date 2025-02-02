@@ -160,53 +160,55 @@ test.describe("scroll restoration", () => {
       expectPageErrorsEmpty(log);
     });
   });
-});
 
-test("middle", async ({ page }) => {
-  await page.goto("/page1.html");
+  test.describe("page 2 loaded", () => {
+    test("range is correct", async ({ page }) => {
+      await page.goto("/page1.html");
 
-  await scroll(page, 1000);
+      await scroll(page, 1000);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 1, 5, 8, 12);
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 1, 5, 8, 12);
 
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-  await page.getByText("Go to page 1").click();
+      await page.getByText("Go to dynamic").click();
+      await expect(page).toHaveTitle("Dynamic");
+      await page.getByText("Go to page 1").click();
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 1, 5, 8, 12);
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 1, 5, 8, 12);
 
-  await scroll(page, 5100);
+      await scroll(page, 5100);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 22, 26, 29, 29);
-});
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 22, 26, 29, 29);
+    });
 
-test("middle click", async ({ page }) => {
-  await page.goto("/page1.html");
-  const log = initLog(page);
+    test("items clickable", async ({ page }) => {
+      await page.goto("/page1.html");
+      const log = initLog(page);
 
-  await scroll(page, 1000);
+      await scroll(page, 1000);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 06");
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 06");
 
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
+      await page.getByText("Go to dynamic").click();
+      await expect(page).toHaveTitle("Dynamic");
 
-  await page.getByText("Go to page 1").click();
+      await page.getByText("Go to page 1").click();
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 06");
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 06");
 
-  await scroll(page, 5100);
+      await scroll(page, 5100);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 29");
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 29");
 
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
+      expect(log.consoleMessages).toEqual([]);
+      expectPageErrorsEmpty(log);
+    });
+  });
 });
 
 test("btm", async ({ page }) => {
