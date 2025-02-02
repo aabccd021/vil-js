@@ -78,6 +78,7 @@
         cp -L ${./playwright.config.ts} ./playwright.config.ts
         cp -L ${./vil.ts} ./vil.ts
         cp -L ${./vil.test.ts} ./vil.test.ts
+        cp -L ${./testUtils.ts} ./testUtils.ts
         cp -Lr ${nodeModules} ./node_modules
         cp -Lr ${./snapshots} ./snapshots
         cp -Lr ${./stories} ./stories
@@ -96,6 +97,7 @@
         cp -L ${./playwright.config.ts} ./playwright.config.ts
         cp -L ${./vil.ts} ./vil.ts
         cp -L ${./vil.test.ts} ./vil.test.ts
+        cp -L ${./testUtils.ts} ./testUtils.ts
         cp -Lr ${nodeModules} ./node_modules
         cp -Lr ${./stories} ./stories
         chmod -R 700 ./stories
