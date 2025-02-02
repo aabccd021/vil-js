@@ -9,6 +9,7 @@ const expectClickable = async (page: Page, log: Log, text: string): Promise<void
   expect(log.consoleMessages).toEqual([]);
   log.consoleMessages.length = 0;
 
+  await expect(page.getByText(text)).toBeInViewport();
   await page.getByText(text).click();
   expect(log.consoleMessages).toEqual([`Clicked on ${text}`]);
   log.consoleMessages.length = 0;
@@ -75,11 +76,11 @@ test.describe("full scroll", () => {
     for (let i = 0; i < 3; i++) {
       await expect(page).toHaveTitle("Page 1");
       await expectRange(page, 0, 0, 3, 7);
-      await scroll(page, 5100);
+      await scroll(page, 5200);
 
       await expect(page).toHaveTitle("Page 1");
       await expectRange(page, 21, 25, 29, 29);
-      await scroll(page, -5100);
+      await scroll(page, -5200);
     }
   });
 
@@ -90,11 +91,11 @@ test.describe("full scroll", () => {
     for (let i = 0; i < 3; i++) {
       await expect(page).toHaveTitle("Page 1");
       await expectClickable(page, log, "Item 00");
-      await scroll(page, 5100);
+      await scroll(page, 5200);
 
       await expect(page).toHaveTitle("Page 1");
       await expectClickable(page, log, "Item 29");
-      await scroll(page, -5100);
+      await scroll(page, -5200);
     }
 
     expect(log.consoleMessages).toEqual([]);
@@ -134,19 +135,18 @@ test.describe("scroll restoration", () => {
       const log = initLog(page);
 
       await scroll(page, 200);
-      await page.waitForTimeout(1000);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectClickable(page, log, "Item 05");
+      await expectClickable(page, log, "Item 04");
 
       await page.getByText("Go to dynamic").click();
       await expect(page).toHaveTitle("Dynamic");
       await page.getByText("Go to page 1").click();
 
       await expect(page).toHaveTitle("Page 1");
-      await expectClickable(page, log, "Item 05");
+      await expectClickable(page, log, "Item 04");
 
-      await scroll(page, 5100);
+      await scroll(page, 5600);
 
       await expect(page).toHaveTitle("Page 1");
       await expectClickable(page, log, "Item 29");
@@ -172,7 +172,7 @@ test.describe("scroll restoration", () => {
       await expect(page).toHaveTitle("Page 1");
       await expectRange(page, 1, 5, 8, 12);
 
-      await scroll(page, 5100);
+      await scroll(page, 5200);
 
       await expect(page).toHaveTitle("Page 1");
       await expectRange(page, 22, 26, 29, 29);
@@ -195,7 +195,7 @@ test.describe("scroll restoration", () => {
       await expect(page).toHaveTitle("Page 1");
       await expectClickable(page, log, "Item 06");
 
-      await scroll(page, 5100);
+      await scroll(page, 5600);
 
       await expect(page).toHaveTitle("Page 1");
       await expectClickable(page, log, "Item 29");
@@ -209,7 +209,7 @@ test.describe("scroll restoration", () => {
     test("range is correct", async ({ page }) => {
       await page.goto("/page1.html");
 
-      await scroll(page, 5100);
+      await scroll(page, 5200);
 
       await expect(page).toHaveTitle("Page 1");
       await expectRange(page, 21, 25, 29, 29);
@@ -226,7 +226,7 @@ test.describe("scroll restoration", () => {
       await page.goto("/page1.html");
       const log = initLog(page);
 
-      await scroll(page, 5100);
+      await scroll(page, 5200);
 
       await expect(page).toHaveTitle("Page 1");
       await expectClickable(page, log, "Item 29");
@@ -333,7 +333,7 @@ test.describe("reload resets", () => {
     await expect(page).toHaveTitle("Page 1");
     await expectRange(page, 0, 0, 3, 7);
 
-    await scroll(page, 5100);
+    await scroll(page, 5200);
 
     await expect(page).toHaveTitle("Page 1");
     await expectRange(page, 21, 25, 29, 29);
@@ -351,7 +351,7 @@ test.describe("reload resets", () => {
     await expect(page).toHaveTitle("Page 1");
     await expectClickable(page, log, "Item 00");
 
-    await scroll(page, 5100);
+    await scroll(page, 5200);
 
     await expect(page).toHaveTitle("Page 1");
     await expectClickable(page, log, "Item 29");
