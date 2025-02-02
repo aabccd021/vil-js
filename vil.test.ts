@@ -1,10 +1,4 @@
-import { type Locator, type Page, expect, test } from "@playwright/test";
-
-const getScrollable = async (page: Page): Promise<Locator> => {
-  const locator = page.locator(".root");
-  await locator.waitFor();
-  return locator;
-};
+import { type Page, expect, test } from "@playwright/test";
 
 type Log = {
   consoleMessages: string[];
