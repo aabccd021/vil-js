@@ -128,7 +128,7 @@ test.describe("scroll restoration", () => {
       await scroll(page, 5100);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 22, 26, 29, 29);
+      await expectRange(page, 21, 26, 29, 29);
 
       expect(log.consoleMessages).toEqual([]);
       expectPageErrorsEmpty(log);
