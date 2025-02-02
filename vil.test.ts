@@ -72,8 +72,8 @@ const expectPageErrorsEmpty = (log: Log): void => {
   expect(pageErrors).toEqual([]);
 };
 
-test.describe("scroll to bottom and top 3 times", () => {
-  test("has correct range", async ({ page }) => {
+test.describe("full scroll", () => {
+  test("range is correct", async ({ page }) => {
     await page.goto("/page1.html");
 
     for (let i = 0; i < 3; i++) {
@@ -106,56 +106,60 @@ test.describe("scroll to bottom and top 3 times", () => {
   });
 });
 
-test("little scroll", async ({ page }) => {
-  await page.goto("/page1.html");
-  const log = initLog(page);
+test.describe("scroll restoration", () => {
+  test.describe("little scroll on page 1", () => {
+    test("range is correct", async ({ page }) => {
+      await page.goto("/page1.html");
+      const log = initLog(page);
 
-  await scroll(page, 200);
-  await page.waitForTimeout(1000);
+      await scroll(page, 200);
+      await page.waitForTimeout(1000);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 4, 8);
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 0, 0, 4, 8);
 
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-  await page.getByText("Go to page 1").click();
+      await page.getByText("Go to dynamic").click();
+      await expect(page).toHaveTitle("Dynamic");
+      await page.getByText("Go to page 1").click();
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 4, 8);
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 0, 0, 4, 8);
 
-  await scroll(page, 5100);
+      await scroll(page, 5100);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 22, 26, 29, 29);
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 22, 26, 29, 29);
 
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
-});
+      expect(log.consoleMessages).toEqual([]);
+      expectPageErrorsEmpty(log);
+    });
 
-test("little scroll click", async ({ page }) => {
-  await page.goto("/page1.html");
-  const log = initLog(page);
+    test("items clickable", async ({ page }) => {
+      await page.goto("/page1.html");
+      const log = initLog(page);
 
-  await scroll(page, 200);
-  await page.waitForTimeout(1000);
+      await scroll(page, 200);
+      await page.waitForTimeout(1000);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 05");
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 05");
 
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-  await page.getByText("Go to page 1").click();
+      await page.getByText("Go to dynamic").click();
+      await expect(page).toHaveTitle("Dynamic");
+      await page.getByText("Go to page 1").click();
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 05");
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 05");
 
-  await scroll(page, 5100);
+      await scroll(page, 5100);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 29");
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 29");
 
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
+      expect(log.consoleMessages).toEqual([]);
+      expectPageErrorsEmpty(log);
+    });
+  });
 });
 
 test("middle", async ({ page }) => {
