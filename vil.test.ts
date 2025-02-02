@@ -195,7 +195,7 @@ test("middle", async ({ page }) => {
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 1, 5, 8, 12);
 
-  await scroll(page, 5100);
+  await scroll(page, 5200);
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 22, 26, 29, 29);
@@ -241,6 +241,26 @@ test("middle click", async ({ page }) => {
 });
 
 test("btm", async ({ page }) => {
+  await page.goto("/page1.html");
+  const log = initLog(page);
+
+  await scroll(page, 5100);
+
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 21, 26, 29, 29);
+
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
+  await page.getByText("Go to page 1").click();
+
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 21, 26, 29, 29);
+
+  expect(log.consoleMessages).toEqual([]);
+  expectPageErrorsEmpty(log);
+});
+
+test("btm click", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
