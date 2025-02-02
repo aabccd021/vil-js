@@ -110,6 +110,8 @@ test("little scroll", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
 
+  await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
+  await expect(page.locator(".vil-item").last()).toHaveText("Item 8");
   await expect(page.getByText("Item 0")).toBeInViewport();
   await expect(page.getByText("Item 1")).toBeInViewport();
   await expect(page.getByText("Item 2")).toBeInViewport();
@@ -122,9 +124,6 @@ test("little scroll", async ({ page }) => {
   await click(page, log, "Item 2");
   await click(page, log, "Item 3");
   await click(page, log, "Item 4");
-
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
-  await expect(page.locator(".vil-item").last()).toHaveText("Item 9");
 
   await page.getByText("Go to dynamic").click();
   await expect(page).toHaveTitle("Dynamic");
