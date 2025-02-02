@@ -39,14 +39,14 @@ async function expectRange(
   await expect(page.locator(".vil-item").first(), `iteration: ${iteration}`).toHaveText(itemText(first));
   await expect(page.locator(".vil-item").last(), `iteration: ${iteration}`).toHaveText(itemText(last));
 
-  if (firstVisible - 1 <= 0) {
-    await expect(page.getByText(itemText(firstVisible - 1)), `iteration: ${iteration}`).not.toBeInViewport();
+  for (let i = Math.max(0, first - 1); i < firstVisible; i++) {
+    await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).not.toBeInViewport();
   }
   for (let i = firstVisible; i <= lastVisible; i++) {
     await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).toBeInViewport();
   }
-  if (lastVisible + 1 >= 29) {
-    await expect(page.getByText(itemText(lastVisible + 1)), `iteration: ${iteration}`).not.toBeInViewport();
+  for (let i = lastVisible + 1; i <= last; i++) {
+    await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).not.toBeInViewport();
   }
 }
 
@@ -79,7 +79,7 @@ test.describe("full scroll", () => {
       await scroll(page, 5100);
 
       await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-      await expectRange(page, 21, 26, 29, 29, i);
+      await expectRange(page, 21, 25, 29, 29, i);
       await scroll(page, -5100);
     }
   });
@@ -125,7 +125,7 @@ test.describe("scroll restoration", () => {
       await scroll(page, 5100);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 21, 26, 29, 29);
+      await expectRange(page, 21, 25, 29, 29);
 
       expect(log.consoleMessages).toEqual([]);
       expectPageErrorsEmpty(log);
@@ -214,14 +214,14 @@ test.describe("scroll restoration", () => {
       await scroll(page, 5100);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 21, 26, 29, 29);
+      await expectRange(page, 21, 25, 29, 29);
 
       await page.getByText("Go to dynamic").click();
       await expect(page).toHaveTitle("Dynamic");
       await page.getByText("Go to page 1").click();
 
       await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 21, 26, 29, 29);
+      await expectRange(page, 21, 25, 29, 29);
     });
 
     test("items clickable", async ({ page }) => {
@@ -338,7 +338,7 @@ test.describe("reload resets", () => {
     await scroll(page, 5100);
 
     await expect(page).toHaveTitle("Page 1");
-    await expectRange(page, 21, 26, 29, 29);
+    await expectRange(page, 21, 25, 29, 29);
 
     await page.reload();
 
