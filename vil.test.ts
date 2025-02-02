@@ -300,47 +300,14 @@ test("back and forth dynamic click", async ({ page }) => {
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 00");
 
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
+  for (let i = 0; i < 3; i++) {
+    await page.getByText("Go to dynamic").click();
+    await expect(page).toHaveTitle("Dynamic");
 
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
+    await page.getByText("Go to page 1").click();
+    await expect(page).toHaveTitle("Page 1");
+    await expectClickable(page, log, "Item 00", i);
+  }
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
