@@ -9,7 +9,6 @@ const click = async (page: Page, log: Log, text: string): Promise<void> => {
   expect(log.consoleMessages).toEqual([]);
   log.consoleMessages.length = 0;
 
-  await expect(page.getByText(text)).toBeInViewport();
   await page.getByText(text).click();
   expect(log.consoleMessages).toEqual([`Clicked on ${text}`]);
   log.consoleMessages.length = 0;
@@ -110,11 +109,21 @@ test("little scroll", async ({ page }) => {
   await page.waitForTimeout(1000);
 
   await expect(page).toHaveTitle("Page 1");
+
+  await expect(page.getByText("Item 0")).toBeInViewport();
+  await expect(page.getByText("Item 1")).toBeInViewport();
+  await expect(page.getByText("Item 2")).toBeInViewport();
+  await expect(page.getByText("Item 3")).toBeInViewport();
+  await expect(page.getByText("Item 4")).toBeInViewport();
+  await expect(page.getByText("Item 5")).not.toBeInViewport();
+
+  await click(page, log, "Item 0");
   await click(page, log, "Item 1");
   await click(page, log, "Item 2");
   await click(page, log, "Item 3");
   await click(page, log, "Item 4");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 1");
+
+  await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 9");
 
   await page.getByText("Go to dynamic").click();
