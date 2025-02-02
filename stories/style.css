@@ -3,7 +3,7 @@
   scrollbar-gutter: stable;
 }
 
-/* required for test with playwright */
+/* required only for test with playwright */
 .test-body {
   margin: 0;
   padding: 0;
