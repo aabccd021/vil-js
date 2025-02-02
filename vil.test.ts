@@ -250,82 +250,85 @@ test.describe("scroll restoration", () => {
   });
 
   test.describe("on top", () => {
-    test("range is correct", async ({ page }) => {
-      await page.goto("/page1.html");
+    test.describe("to dynamic page", () => {
+      test("range is correct", async ({ page }) => {
+        await page.goto("/page1.html");
 
-      await expect(page).toHaveTitle("Page 1");
-      await expectRange(page, 0, 0, 3, 7);
+        await expect(page).toHaveTitle("Page 1");
+        await expectRange(page, 0, 0, 3, 7);
 
-      for (let i = 0; i < 3; i++) {
-        await page.getByText("Go to dynamic").click();
-        await expect(page, `iteration: ${i}`).toHaveTitle("Dynamic");
+        for (let i = 0; i < 3; i++) {
+          await page.getByText("Go to dynamic").click();
+          await expect(page, `iteration: ${i}`).toHaveTitle("Dynamic");
 
-        await page.getByText("Go to page 1").click();
-        await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-        await expectRange(page, 0, 0, 3, 7, i);
-      }
+          await page.getByText("Go to page 1").click();
+          await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+          await expectRange(page, 0, 0, 3, 7, i);
+        }
+      });
+
+      test("items clickable", async ({ page }) => {
+        await page.goto("/page1.html");
+        const log = initLog(page);
+
+        await expect(page).toHaveTitle("Page 1");
+        await expectClickable(page, log, "Item 00");
+
+        for (let i = 0; i < 3; i++) {
+          await page.getByText("Go to dynamic").click();
+          await expect(page, `iteration: ${i}`).toHaveTitle("Dynamic");
+
+          await page.getByText("Go to page 1").click();
+          await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+          await expectClickable(page, log, "Item 00", i);
+        }
+
+        expect(log.consoleMessages).toEqual([]);
+        expectPageErrorsEmpty(log);
+      });
     });
+    test.describe("to static page", () => {
+      test("range is correct", async ({ page }) => {
+        await page.goto("/page1.html");
+        const log = initLog(page);
 
-    test("items clickable", async ({ page }) => {
-      await page.goto("/page1.html");
-      const log = initLog(page);
+        await expect(page).toHaveTitle("Page 1");
+        await expectRange(page, 0, 0, 3, 7);
 
-      await expect(page).toHaveTitle("Page 1");
-      await expectClickable(page, log, "Item 00");
+        for (let i = 0; i < 3; i++) {
+          await page.getByText("Go to static").click();
+          await expect(page, `iteration: ${i}`).toHaveTitle("Static");
 
-      for (let i = 0; i < 3; i++) {
-        await page.getByText("Go to dynamic").click();
-        await expect(page, `iteration: ${i}`).toHaveTitle("Dynamic");
+          await page.getByText("Go to page 1").click();
+          await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+          await expectRange(page, 0, 0, 3, 7, i);
+        }
 
-        await page.getByText("Go to page 1").click();
-        await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-        await expectClickable(page, log, "Item 00", i);
-      }
+        expect(log.consoleMessages).toEqual([]);
+        expectPageErrorsEmpty(log);
+      });
 
-      expect(log.consoleMessages).toEqual([]);
-      expectPageErrorsEmpty(log);
+      test("items clickable", async ({ page }) => {
+        await page.goto("/page1.html");
+        const log = initLog(page);
+
+        await expect(page).toHaveTitle("Page 1");
+        await expectClickable(page, log, "Item 00");
+
+        for (let i = 0; i < 3; i++) {
+          await page.getByText("Go to static").click();
+          await expect(page, `iteration: ${i}`).toHaveTitle("Static");
+
+          await page.getByText("Go to page 1").click();
+          await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+          await expectClickable(page, log, "Item 00", i);
+        }
+
+        expect(log.consoleMessages).toEqual([]);
+        expectPageErrorsEmpty(log);
+      });
     });
   });
-});
-
-test("back and forth static", async ({ page }) => {
-  await page.goto("/page1.html");
-  const log = initLog(page);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
-
-  for (let i = 0; i < 3; i++) {
-    await page.getByText("Go to static").click();
-    await expect(page, `iteration: ${i}`).toHaveTitle("Static");
-
-    await page.getByText("Go to page 1").click();
-    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-    await expectRange(page, 0, 0, 3, 7, i);
-  }
-
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
-});
-
-test("back and forth static click", async ({ page }) => {
-  await page.goto("/page1.html");
-  const log = initLog(page);
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  for (let i = 0; i < 3; i++) {
-    await page.getByText("Go to static").click();
-    await expect(page, `iteration: ${i}`).toHaveTitle("Static");
-
-    await page.getByText("Go to page 1").click();
-    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-    await expectClickable(page, log, "Item 00", i);
-  }
-
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
 });
 
 test("reload", async ({ page }) => {
