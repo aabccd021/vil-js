@@ -209,43 +209,45 @@ test.describe("scroll restoration", () => {
       expectPageErrorsEmpty(log);
     });
   });
-});
 
-test("btm", async ({ page }) => {
-  await page.goto("/page1.html");
+  test.describe("on bottom", () => {
+    test("range is correct", async ({ page }) => {
+      await page.goto("/page1.html");
 
-  await scroll(page, 5100);
+      await scroll(page, 5100);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 21, 26, 29, 29);
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 21, 26, 29, 29);
 
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-  await page.getByText("Go to page 1").click();
+      await page.getByText("Go to dynamic").click();
+      await expect(page).toHaveTitle("Dynamic");
+      await page.getByText("Go to page 1").click();
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 21, 26, 29, 29);
-});
+      await expect(page).toHaveTitle("Page 1");
+      await expectRange(page, 21, 26, 29, 29);
+    });
 
-test("btm click", async ({ page }) => {
-  await page.goto("/page1.html");
-  const log = initLog(page);
+    test("items clickable", async ({ page }) => {
+      await page.goto("/page1.html");
+      const log = initLog(page);
 
-  await scroll(page, 5100);
+      await scroll(page, 5100);
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 29");
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 29");
 
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
+      await page.getByText("Go to dynamic").click();
+      await expect(page).toHaveTitle("Dynamic");
 
-  await page.getByText("Go to page 1").click();
+      await page.getByText("Go to page 1").click();
 
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 29");
+      await expect(page).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 29");
 
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
+      expect(log.consoleMessages).toEqual([]);
+      expectPageErrorsEmpty(log);
+    });
+  });
 });
 
 test("back and forth dynamic", async ({ page }) => {
