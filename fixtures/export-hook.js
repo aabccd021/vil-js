@@ -1,2 +1,0 @@
-var a=document.querySelectorAll("script"),r=[];for(let o of Array.from(a)){if(o.type!=="module"){console.error(`script tag ${o.src} must have type=module`);continue}for(let[t,e]of Object.entries(o.dataset)){if(e===void 0||!t.startsWith("exportHook"))continue;let n=t.replace("exportHook",""),c=import(o.src).then(i=>[n,i[e]]);r.push(c)}}var s=await Promise.allSettled(r);for(let o of s)o.status==="rejected"&&console.error(o.reason);var l=s.filter(o=>o.status==="fulfilled").map(o=>o.value);export{l as hooks};
-//# sourceMappingURL=export-hook.es2022.min.js.map

@@ -2,12 +2,20 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
+    project-utils = {
+      url = "github:aabccd021/project-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, treefmt-nix }:
+  outputs = { self, nixpkgs, treefmt-nix, project-utils }:
+
 
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      utilLib = project-utils.lib;
+
+      nodeModules = utilLib.buildNodeModules.fromLockJson ./package.json ./package-lock.json;
 
       treefmtEval = treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
@@ -34,76 +42,89 @@
         name = "serve";
         text = ''
           trap 'cd $(pwd)' EXIT
-          repo_root=$(git rev-parse --show-toplevel)
-          cd "$repo_root" || exit
+          if command -v git &> /dev/null; then
+            root=$(git rev-parse --show-toplevel)
+            cd "$root"
+          fi
 
-          cp -L ${exportHookJs} ./fixtures/export-hook.js
-          chmod 600 ./fixtures/export-hook.js
-          cp -L ${freezePageJs} ./fixtures/freeze-page.js
-          chmod 600 ./fixtures/freeze-page.js
+          cp -L ${exportHookJs} ./stories/export-hook.js
+          chmod 600 ./stories/export-hook.js
+          cp -L ${freezePageJs} ./stories/freeze-page.js
+          chmod 600 ./stories/freeze-page.js
           ${pkgs.esbuild}/bin/esbuild ./vil.ts \
             --bundle \
             --target=es6 \
             --format=esm \
             --minify \
-            --outfile=./fixtures/vil.js \
-            --servedir=./fixtures \
+            --outfile=./stories/vil.js \
+            --servedir=./stories \
             --sourcemap \
             --watch
         '';
       };
 
+      tests = pkgs.runCommandNoCCLocal "tests"
+        {
+          buildInputs = [ pkgs.nodejs serve ];
+        } ''
+        export XDG_CONFIG_HOME="$(pwd)"
+        export XDG_CACHE_HOME="$(pwd)"
+        export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
+        export PATH=./node_modules/esbuild/bin:"$PATH"
+        cp -L ${./package.json} ./package.json
+        cp -L ${./playwright.config.ts} ./playwright.config.ts
+        cp -L ${./tsconfig.json} ./tsconfig.json
+        cp -L ${./vil.ts} ./vil.ts
+        cp -L ${./vil.test.ts} ./vil.test.ts
+        cp -Lr ${nodeModules} ./node_modules
+        cp -Lr ${./stories} ./stories
+        chmod -R 700 ./stories
+        node_modules/playwright/cli.js test
+        touch $out
+      '';
+
+      dist = pkgs.runCommandNoCCLocal "dist" { } ''
+        mkdir  $out
+        cp -Lr ${nodeModules} ./node_modules
+        cp -L ${./package.json} ./package.json
+        cp -L ${./vil.ts} ./vil.ts
+        ${pkgs.esbuild}/bin/esbuild ./vil.ts \
+          --bundle \
+          --target=es6 \
+          --format=esm \
+          --minify \
+          --sourcemap \
+          --outfile="$out/vil.min.js"
+        ${pkgs.esbuild}/bin/esbuild ./vil.ts \
+          --bundle \
+          --target=esnext \
+          --format=esm \
+          --minify \
+          --sourcemap \
+          --outfile="$out/vil.esnext.min.js"
+      '';
+
       publish = pkgs.writeShellApplication {
         name = "publish";
         text = ''
-          trap 'cd $(pwd)' EXIT
-          repo_root=$(git rev-parse --show-toplevel)
-          cd "$repo_root" || exit
-
           nix flake check
-
           NPM_TOKEN=''${NPM_TOKEN:-}
           if [ -n "$NPM_TOKEN" ]; then
             npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
           fi
-
-          npm install
+          result=$(nix build --no-link --print-out-paths .#dist)
           rm -rf dist
           mkdir dist
-
-          ${pkgs.esbuild}/bin/esbuild ./vil.ts \
-            --bundle \
-            --target=es6 \
-            --format=esm \
-            --minify \
-            --outfile="./dist/vil.es6.min.js"
-
-          ${pkgs.esbuild}/bin/esbuild ./vil.ts \
-            --bundle \
-            --format=esm \
-            --minify \
-            --outfile="./dist/vil.min.js"
-
+          cp -Lr "$result"/* dist
+          chmod 400 dist/*
           npm publish --dry-run
           npm publish || true
         '';
       };
 
-      check = pkgs.writeShellApplication {
-        name = "check";
-        text = ''
-          trap 'cd $(pwd)' EXIT
-          repo_root=$(git rev-parse --show-toplevel)
-          cd "$repo_root" || exit
-          ${pkgs.nodejs}/bin/npm install
-          # ${pkgs.typescript}/bin/tsc
-          ${pkgs.biome}/bin/biome check --fix --error-on-warnings
-          ${pkgs.nodejs}/bin/npx playwright test
-        '';
-      };
-
       packages = {
-        check = check;
+        tests = tests;
+        dist = dist;
         formatting = treefmtEval.config.build.check self;
         publish = publish;
       };
@@ -133,13 +154,6 @@
           pkgs.esbuild
           serve
         ];
-      };
-
-      apps.x86_64-linux = {
-        check = {
-          type = "app";
-          program = "${check}/bin/check";
-        };
       };
 
       apps.x86_64-linux.serve = {

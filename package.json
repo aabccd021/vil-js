@@ -5,7 +5,7 @@
   "author": "aabccd021",
   "license": "MIT",
   "files": ["dist"],
-  "main": "dist/vil.es6.min.js",
+  "main": "dist/vil.min.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/aabccd021/vil-js.git"

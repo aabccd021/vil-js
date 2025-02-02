@@ -29,9 +29,9 @@ dist-ssr
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-fixtures/vil.js
-fixtures/export-hook.js
-fixtures/freeze-page.js
+stories/vil.js
+stories/export-hook.js
+stories/freeze-page.js
 result
 .gcroot
 
