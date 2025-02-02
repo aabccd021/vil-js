@@ -1,4 +1,4 @@
-import { expect, Page } from "@playwright/test";
+import { type Page, expect } from "@playwright/test";
 
 function itemText(i: number): string {
   return `Item ${String(i).padStart(2, "0")}`;
