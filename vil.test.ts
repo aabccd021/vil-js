@@ -137,14 +137,14 @@ test.describe("scroll restoration", () => {
       await scroll(page, 200);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectClickable(page, log, "Item 04");
+      await expectClickable(page, log, "Item 02");
 
       await page.getByText("Go to dynamic").click();
       await expect(page).toHaveTitle("Dynamic");
       await page.getByText("Go to page 1").click();
 
       await expect(page).toHaveTitle("Page 1");
-      await expectClickable(page, log, "Item 04");
+      await expectClickable(page, log, "Item 02");
 
       await scroll(page, 5600);
 
@@ -229,7 +229,7 @@ test.describe("scroll restoration", () => {
       await scroll(page, 5200);
 
       await expect(page).toHaveTitle("Page 1");
-      await expectClickable(page, log, "Item 29");
+      await expectClickable(page, log, "Item 27");
 
       await page.getByText("Go to dynamic").click();
       await expect(page).toHaveTitle("Dynamic");
@@ -237,7 +237,7 @@ test.describe("scroll restoration", () => {
       await page.getByText("Go to page 1").click();
 
       await expect(page).toHaveTitle("Page 1");
-      await expectClickable(page, log, "Item 29");
+      await expectClickable(page, log, "Item 27");
 
       expect(log.consoleMessages).toEqual([]);
       expectPageErrorsEmpty(log);
@@ -267,7 +267,7 @@ test.describe("scroll restoration", () => {
         const log = initLog(page);
 
         await expect(page).toHaveTitle("Page 1");
-        await expectClickable(page, log, "Item 00");
+        await expectClickable(page, log, "Item 02");
 
         for (let i = 0; i < 3; i++) {
           await page.getByText("Go to dynamic").click();
@@ -275,7 +275,7 @@ test.describe("scroll restoration", () => {
 
           await page.getByText("Go to page 1").click();
           await expect(page).toHaveTitle("Page 1");
-          await expectClickable(page, log, "Item 00");
+          await expectClickable(page, log, "Item 02");
         }
 
         expect(log.consoleMessages).toEqual([]);
@@ -308,7 +308,7 @@ test.describe("scroll restoration", () => {
         const log = initLog(page);
 
         await expect(page).toHaveTitle("Page 1");
-        await expectClickable(page, log, "Item 00");
+        await expectClickable(page, log, "Item 02");
 
         for (let i = 0; i < 3; i++) {
           await page.getByText("Go to static").click();
@@ -316,7 +316,7 @@ test.describe("scroll restoration", () => {
 
           await page.getByText("Go to page 1").click();
           await expect(page).toHaveTitle("Page 1");
-          await expectClickable(page, log, "Item 00");
+          await expectClickable(page, log, "Item 02");
         }
 
         expect(log.consoleMessages).toEqual([]);
@@ -349,7 +349,7 @@ test.describe("reload resets", () => {
     const log = initLog(page);
 
     await expect(page).toHaveTitle("Page 1");
-    await expectClickable(page, log, "Item 00");
+    await expectClickable(page, log, "Item 02");
 
     await scroll(page, 5200);
 
@@ -359,7 +359,7 @@ test.describe("reload resets", () => {
     await page.reload();
 
     await expect(page).toHaveTitle("Page 1");
-    await expectClickable(page, log, "Item 00");
+    await expectClickable(page, log, "Item 02");
 
     expect(log.consoleMessages).toEqual([]);
     expectPageErrorsEmpty(log);
