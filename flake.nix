@@ -79,11 +79,44 @@
         cp -L ${./vil.ts} ./vil.ts
         cp -L ${./vil.test.ts} ./vil.test.ts
         cp -Lr ${nodeModules} ./node_modules
+        cp -Lr ${./snapshots} ./snapshots
         cp -Lr ${./stories} ./stories
         chmod -R 700 ./stories
         node_modules/playwright/cli.js test
         touch $out
       '';
+
+      snapshots = pkgs.runCommandNoCCLocal "snapshots"
+        {
+          buildInputs = [ pkgs.nodejs serve ];
+        } ''
+        export XDG_CONFIG_HOME="$(pwd)"
+        export XDG_CACHE_HOME="$(pwd)"
+        export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
+        cp -L ${./playwright.config.ts} ./playwright.config.ts
+        cp -L ${./vil.ts} ./vil.ts
+        cp -L ${./vil.test.ts} ./vil.test.ts
+        cp -Lr ${nodeModules} ./node_modules
+        cp -Lr ${./stories} ./stories
+        chmod -R 700 ./stories
+        node_modules/playwright/cli.js test --update-snapshots
+        mkdir "$out"
+        cp -Lr ./snapshots/* "$out"
+      '';
+
+      generate-snapshots = pkgs.writeShellApplication {
+        name = "generate-snapshots";
+        text = ''
+          trap 'cd $(pwd)' EXIT
+          root=$(git rev-parse --show-toplevel)
+          cd "$root"
+          result=$(nix build --no-link --print-out-paths .#snapshots)
+          rm snapshots/*
+          cp -Lr "$result"/* snapshots
+          chmod 700 snapshots/*
+        '';
+      };
+
 
       dist = pkgs.runCommandNoCCLocal "dist" { } ''
         mkdir  $out
@@ -136,6 +169,7 @@
         dist = dist;
         formatting = treefmtEval.config.build.check self;
         publish = publish;
+        snapshots = snapshots;
       };
 
       gcroot = packages // {
@@ -172,6 +206,11 @@
       apps.x86_64-linux.publish = {
         type = "app";
         program = "${publish}/bin/publish";
+      };
+
+      apps.x86_64-linux.generate-snapshots = {
+        type = "app";
+        program = "${generate-snapshots}/bin/generate-snapshots";
       };
 
     };

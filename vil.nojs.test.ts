@@ -4,5 +4,5 @@ test.use({ javaScriptEnabled: false });
 
 test("screenshot without javascript", async ({ page }) => {
   await page.goto("/single-page.html");
-  // await expect(page).toHaveScreenshot("snapshots/screenshot.png");
+  await expect(page).toHaveScreenshot("single-page.png");
 });
