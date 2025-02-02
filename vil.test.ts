@@ -21,10 +21,7 @@ const initLog = (page: Page): Log => {
   page.on("console", (msg) => consoleMessages.push(msg.text()));
   page.on("pageerror", (msg) => pageerrors.push(msg));
 
-  return {
-    consoleMessages,
-    pageerrors,
-  };
+  return { consoleMessages, pageerrors };
 };
 
 function itemText(i: number): string {
