@@ -72,36 +72,38 @@ const expectPageErrorsEmpty = (log: Log): void => {
   expect(pageErrors).toEqual([]);
 };
 
-test("bottom top", async ({ page }) => {
-  await page.goto("/page1.html");
+test.describe("scroll to bottom and top 3 times", () => {
+  test("has correct range", async ({ page }) => {
+    await page.goto("/page1.html");
 
-  for (let i = 0; i < 3; i++) {
-    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-    await expectRange(page, 0, 0, 3, 7, i);
-    await scroll(page, 5100);
+    for (let i = 0; i < 3; i++) {
+      await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+      await expectRange(page, 0, 0, 3, 7, i);
+      await scroll(page, 5100);
 
-    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-    await expectRange(page, 21, 26, 29, 29, i);
-    await scroll(page, -5100);
-  }
-});
+      await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+      await expectRange(page, 21, 26, 29, 29, i);
+      await scroll(page, -5100);
+    }
+  });
 
-test("bottom top click", async ({ page }) => {
-  await page.goto("/page1.html");
-  const log = initLog(page);
+  test("items are clickable", async ({ page }) => {
+    await page.goto("/page1.html");
+    const log = initLog(page);
 
-  for (let i = 0; i < 3; i++) {
-    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-    await expectClickable(page, log, "Item 00", i);
-    await scroll(page, 5100);
+    for (let i = 0; i < 3; i++) {
+      await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 00", i);
+      await scroll(page, 5100);
 
-    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
-    await expectClickable(page, log, "Item 29", i);
-    await scroll(page, -5100);
-  }
+      await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+      await expectClickable(page, log, "Item 29", i);
+      await scroll(page, -5100);
+    }
 
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
+    expect(log.consoleMessages).toEqual([]);
+    expectPageErrorsEmpty(log);
+  });
 });
 
 test("little scroll", async ({ page }) => {
