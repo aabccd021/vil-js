@@ -27,6 +27,28 @@ const initLog = (page: Page): Log => {
   };
 };
 
+async function expectRange(
+  page: Page,
+  first: number,
+  firstVisible: number,
+  lastVisible: number,
+  last: number,
+): Promise<void> {
+  await expect(page.locator(".vil-item").first()).toHaveText(`Item ${first}`);
+
+  if (firstVisible - 1 <= 0) {
+    await expect(page.getByText(`Item ${firstVisible - 1}`)).not.toBeInViewport();
+  }
+  for (let i = firstVisible; i <= lastVisible; i++) {
+    await expect(page.getByText(`Item ${i}`)).toBeInViewport();
+  }
+  if (lastVisible + 1 >= 29) {
+    await expect(page.getByText(`Item ${lastVisible + 1}`)).not.toBeInViewport();
+  }
+
+  await expect(page.locator(".vil-item").last()).toHaveText(`Item ${last}`);
+}
+
 const scroll = async (page: Page, pixels: number): Promise<void> => {
   const scrollDeltaAbs = 100;
   const scrollDelta = pixels > 0 ? scrollDeltaAbs : -scrollDeltaAbs;
@@ -100,28 +122,6 @@ test("bottom top", async ({ page }) => {
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
 });
-
-async function expectRange(
-  page: Page,
-  first: number,
-  firstVisible: number,
-  lastVisible: number,
-  last: number,
-): Promise<void> {
-  await expect(page.locator(".vil-item").first()).toHaveText(`Item ${first}`);
-
-  if (firstVisible - 1 <= 0) {
-    await expect(page.getByText(`Item ${firstVisible - 1}`)).not.toBeInViewport();
-  }
-  for (let i = firstVisible; i <= lastVisible; i++) {
-    await expect(page.getByText(`Item ${i}`)).toBeInViewport();
-  }
-  if (lastVisible + 1 >= 29) {
-    await expect(page.getByText(`Item ${lastVisible + 1}`)).not.toBeInViewport();
-  }
-
-  await expect(page.locator(".vil-item").last()).toHaveText(`Item ${last}`);
-}
 
 test("little scroll", async ({ page }) => {
   await page.goto("/page1.html");
