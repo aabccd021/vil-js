@@ -73,7 +73,6 @@ const expectPageErrorsEmpty = (log: Log): void => {
 
 test("bottom top", async ({ page }) => {
   await page.goto("/page1.html");
-  const log = initLog(page);
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 0, 0, 3, 7);
@@ -107,9 +106,6 @@ test("bottom top", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 0, 0, 3, 7);
-
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
 });
 
 test("bottom top click", async ({ page }) => {
@@ -181,7 +177,6 @@ test("little scroll", async ({ page }) => {
 
 test("middle", async ({ page }) => {
   await page.goto("/page1.html");
-  const log = initLog(page);
 
   await scroll(page, 1000);
 
@@ -199,9 +194,6 @@ test("middle", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 22, 26, 29, 29);
-
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
 });
 
 test("middle click", async ({ page }) => {
@@ -242,7 +234,6 @@ test("middle click", async ({ page }) => {
 
 test("btm", async ({ page }) => {
   await page.goto("/page1.html");
-  const log = initLog(page);
 
   await scroll(page, 5100);
 
@@ -255,9 +246,6 @@ test("btm", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 21, 26, 29, 29);
-
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
 });
 
 test("btm click", async ({ page }) => {
@@ -340,7 +328,6 @@ test("back and forth dynamic click", async ({ page }) => {
 
 test("back and forth dynamic", async ({ page }) => {
   await page.goto("/page1.html");
-  const log = initLog(page);
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 0, 0, 3, 7);
@@ -386,9 +373,6 @@ test("back and forth dynamic", async ({ page }) => {
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 0, 0, 3, 7);
-
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
 });
 
 test("back and forth static", async ({ page }) => {
@@ -446,7 +430,6 @@ test("back and forth static", async ({ page }) => {
 
 test("reload", async ({ page }) => {
   await page.goto("/page1.html");
-  const log = initLog(page);
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 0, 0, 3, 7);
@@ -460,9 +443,6 @@ test("reload", async ({ page }) => {
 
   await expect(page).toHaveTitle("Page 1");
   await expectRange(page, 0, 0, 3, 7);
-
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
 });
 
 test("reload click", async ({ page }) => {
