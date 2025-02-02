@@ -39,13 +39,13 @@ async function expectRange(
   await expect(page.locator(".vil-item").first(), `iteration: ${iteration}`).toHaveText(itemText(first));
   await expect(page.locator(".vil-item").last(), `iteration: ${iteration}`).toHaveText(itemText(last));
 
-  for (let i = first; i < firstVisible; i++) {
+  for (let i = 0; i < firstVisible; i++) {
     await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).not.toBeInViewport();
   }
   for (let i = firstVisible; i <= lastVisible; i++) {
     await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).toBeInViewport();
   }
-  for (let i = lastVisible + 1; i <= last; i++) {
+  for (let i = lastVisible + 1; i <= 29; i++) {
     await expect(page.getByText(itemText(i)), `iteration: ${iteration}`).not.toBeInViewport();
   }
 }
