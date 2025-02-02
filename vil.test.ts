@@ -340,47 +340,14 @@ test("back and forth static click", async ({ page }) => {
   await expect(page).toHaveTitle("Page 1");
   await expectClickable(page, log, "Item 00");
 
-  await page.getByText("Go to static").click();
-  await expect(page).toHaveTitle("Static");
+  for (let i = 0; i < 3; i++) {
+    await page.getByText("Go to static").click();
+    await expect(page, `iteration: ${i}`).toHaveTitle("Static");
 
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to static").click();
-  await expect(page).toHaveTitle("Static");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to static").click();
-  await expect(page).toHaveTitle("Static");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to static").click();
-  await expect(page).toHaveTitle("Static");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to static").click();
-  await expect(page).toHaveTitle("Static");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
-
-  await page.getByText("Go to static").click();
-  await expect(page).toHaveTitle("Static");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectClickable(page, log, "Item 00");
+    await page.getByText("Go to page 1").click();
+    await expect(page, `iteration: ${i}`).toHaveTitle("Page 1");
+    await expectClickable(page, log, "Item 00", i);
+  }
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
