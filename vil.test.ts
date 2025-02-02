@@ -55,7 +55,7 @@ test("bottom top", async ({ page }) => {
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
-  await scroll(page, 5000);
+  await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
@@ -69,7 +69,7 @@ test("bottom top", async ({ page }) => {
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
-  await scroll(page, 5000);
+  await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
@@ -83,7 +83,7 @@ test("bottom top", async ({ page }) => {
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
-  await scroll(page, 5000);
+  await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
@@ -132,13 +132,12 @@ test("little scroll", async ({ page }) => {
   await expect(page.getByText("Item 4")).toBeInViewport();
   await expect(page.getByText("Item 5")).not.toBeInViewport();
 
-  await scroll(page, 5000);
+  await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.locator(".vil-item").first()).toHaveText("Item 21");
+  await expect(page.locator(".vil-item").first()).toHaveText("Item 22");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 29");
-  await expect(page.getByText("Item 24")).not.toBeInViewport();
-  await expect(page.getByText("Item 25")).toBeInViewport();
+  await expect(page.getByText("Item 25")).not.toBeInViewport();
   await expect(page.getByText("Item 26")).toBeInViewport();
   await expect(page.getByText("Item 27")).toBeInViewport();
   await expect(page.getByText("Item 28")).toBeInViewport();
@@ -173,7 +172,7 @@ test("middle", async ({ page }) => {
   await expect(page.locator(".vil-item").first()).toHaveText("Item 1");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 12");
 
-  await scroll(page, 5000);
+  await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
@@ -352,7 +351,7 @@ test("reload", async ({ page }) => {
   await expect(page.locator(".vil-item").first()).toHaveText("Item 0");
   await expect(page.locator(".vil-item").last()).toHaveText("Item 7");
 
-  await scroll(page, 5000);
+  await scroll(page, 5100);
 
   await expect(page).toHaveTitle("Page 1");
   await click(page, log, "Item 29");
