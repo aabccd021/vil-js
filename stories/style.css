@@ -9,11 +9,13 @@
   padding: 0;
   display: block;
 }
+
+/* required only for test with playwright */
+/* https://github.com/inokawa/virtua/blob/main/.storybook/preview-head.html */
 .test-root {
   width: 100vw;
   height: 100vh;
 }
-/* --- */
 
 .vil-root {
   display: block;
