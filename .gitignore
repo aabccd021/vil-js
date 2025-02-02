@@ -30,6 +30,7 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 stories/vil.js
+stories/invoke-hook.js
 stories/export-hook.js
 stories/freeze-page.js
 result
