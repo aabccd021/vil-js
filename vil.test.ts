@@ -273,6 +273,55 @@ test("btm click", async ({ page }) => {
   expectPageErrorsEmpty(log);
 });
 
+test("back and forth dynamic", async ({ page }) => {
+  await page.goto("/page1.html");
+
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 0, 0, 3, 7);
+
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 0, 0, 3, 7);
+
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 0, 0, 3, 7);
+
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 0, 0, 3, 7);
+
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 0, 0, 3, 7);
+
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 0, 0, 3, 7);
+
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await expectRange(page, 0, 0, 3, 7);
+});
+
 test("back and forth dynamic click", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
@@ -324,55 +373,6 @@ test("back and forth dynamic click", async ({ page }) => {
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
-});
-
-test("back and forth dynamic", async ({ page }) => {
-  await page.goto("/page1.html");
-
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
-
-  await page.getByText("Go to dynamic").click();
-  await expect(page).toHaveTitle("Dynamic");
-
-  await page.getByText("Go to page 1").click();
-  await expect(page).toHaveTitle("Page 1");
-  await expectRange(page, 0, 0, 3, 7);
 });
 
 test("back and forth static", async ({ page }) => {
