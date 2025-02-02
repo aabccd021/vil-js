@@ -109,7 +109,6 @@ test.describe("scroll restoration", () => {
       const log = initLog(page);
 
       await scroll(page, 200);
-      await page.waitForTimeout(1000);
 
       await expect(page).toHaveTitle("Page 1");
       await expectRange(page, 0, 0, 4, 8);
