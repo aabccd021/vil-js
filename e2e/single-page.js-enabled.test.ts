@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { expectRendered } from "./testUtils.ts";
+import { expectRendered } from "./utils.ts";
 
 test("js is enabled", async ({ page }) => {
   await page.goto("/single-page.html");

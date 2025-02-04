@@ -1,5 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
-import { expectRendered } from "./testUtils.ts";
+import { expectRendered } from "./utils.ts";
 
 type Log = {
   consoleMessages: string[];
