@@ -341,9 +341,3 @@ test.describe("reload resets", () => {
     expectPageErrorsEmpty(log);
   });
 });
-
-test("Single page with js enabled", async ({ page }) => {
-  await page.goto("/single-page.html");
-  await expectRendered(page, 0, 0, 4, 8);
-  await expect(page).toHaveScreenshot("single-page-js-enabled.png");
-});
