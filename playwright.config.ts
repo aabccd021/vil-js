@@ -9,7 +9,9 @@ export default defineConfig({
   // workers: 1,
   retries: 1,
   // repeatEach: 2,
-  snapshotPathTemplate: "snapshots/{arg}{ext}",
+
+  testDir: "e2e",
+  snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}-{arg}{ext}",
   use: {
     baseURL: "http://127.0.0.1:8000",
   },

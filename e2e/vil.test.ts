@@ -1,4 +1,5 @@
 import { type Page, expect, test } from "@playwright/test";
+import { expectRendered } from "./testUtils.ts";
 
 type Log = {
   consoleMessages: string[];
@@ -24,31 +25,6 @@ const initLog = (page: Page): Log => {
 
   return { consoleMessages, pageerrors };
 };
-
-function itemText(i: number): string {
-  return `Item ${String(i).padStart(2, "0")}`;
-}
-
-async function expectRendered(
-  page: Page,
-  first: number,
-  firstVisible: number,
-  lastVisible: number,
-  last: number,
-): Promise<void> {
-  await expect(page.locator(".vil-item").first()).toHaveText(itemText(first));
-  await expect(page.locator(".vil-item").last()).toHaveText(itemText(last));
-
-  for (let i = 0; i < firstVisible; i++) {
-    await expect(page.getByText(itemText(i))).not.toBeInViewport();
-  }
-  for (let i = firstVisible; i <= lastVisible; i++) {
-    await expect(page.getByText(itemText(i))).toBeInViewport();
-  }
-  for (let i = lastVisible + 1; i <= 29; i++) {
-    await expect(page.getByText(itemText(i))).not.toBeInViewport();
-  }
-}
 
 const scroll = async (page: Page, pixels: number): Promise<void> => {
   const scrollDeltaAbs = 100;
@@ -366,8 +342,8 @@ test.describe("reload resets", () => {
   });
 });
 
-test("screenshot with javascript", async ({ page }) => {
+test("Single page with js enabled", async ({ page }) => {
   await page.goto("/single-page.html");
   await expectRendered(page, 0, 0, 4, 8);
-  await expect(page).toHaveScreenshot("single-page.png");
+  await expect(page).toHaveScreenshot("single-page-js-enabled.png");
 });

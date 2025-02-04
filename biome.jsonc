@@ -41,7 +41,8 @@
         "all": true
       },
       "nursery": {
-        "all": true
+        "all": true,
+        "noSecrets": "off"
       },
       "style": {
         "all": true,

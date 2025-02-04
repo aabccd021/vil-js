@@ -77,17 +77,19 @@
         export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
         cp -L ${./playwright.config.ts} ./playwright.config.ts
         cp -L ${./vil.ts} ./vil.ts
-        cp -L ${./vil.test.ts} ./vil.test.ts
-        cp -L ${./testUtils.ts} ./testUtils.ts
+        cp -L ${./tsconfig.json} ./tsconfig.json
+        cp -L ${./package.json} ./package.json
+        cp -Lr ${./e2e} ./e2e
         cp -Lr ${nodeModules} ./node_modules
-        cp -Lr ${./snapshots} ./snapshots
+
         cp -Lr ${./stories} ./stories
-        chmod -R 700 ./stories
+        chmod 700 ./stories
+
         node_modules/playwright/cli.js test
         touch $out
       '';
 
-      snapshots = pkgs.runCommandNoCCLocal "snapshots"
+      screenshots = pkgs.runCommandNoCCLocal "screenshots"
         {
           buildInputs = [ pkgs.nodejs serve ];
         } ''
@@ -96,26 +98,32 @@
         export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
         cp -L ${./playwright.config.ts} ./playwright.config.ts
         cp -L ${./vil.ts} ./vil.ts
-        cp -L ${./vil.test.ts} ./vil.test.ts
-        cp -L ${./testUtils.ts} ./testUtils.ts
+        cp -L ${./tsconfig.json} ./tsconfig.json
+        cp -L ${./package.json} ./package.json
         cp -Lr ${nodeModules} ./node_modules
+
         cp -Lr ${./stories} ./stories
-        chmod -R 700 ./stories
+        chmod 700 ./stories
+
+        cp -Lr ${./e2e} ./e2e
+        chmod 700 ./e2e
+        chmod 700 ./e2e/__screenshots__
+
         node_modules/playwright/cli.js test --update-snapshots
-        mkdir "$out"
-        cp -Lr ./snapshots/* "$out"
+        mv ./e2e/__screenshots__ "$out"
       '';
 
-      generate-snapshots = pkgs.writeShellApplication {
-        name = "generate-snapshots";
+      generate-screenshots = pkgs.writeShellApplication {
+        name = "generate-screenshots";
         text = ''
           trap 'cd $(pwd)' EXIT
           root=$(git rev-parse --show-toplevel)
           cd "$root"
-          result=$(nix build --no-link --print-out-paths .#snapshots)
-          rm snapshots/*
-          cp -Lr "$result"/* snapshots
-          chmod 700 snapshots/*
+          result=$(nix build --no-link --print-out-paths .#screenshots)
+          rm ./e2e/__screenshots__/* > /dev/null 2>&1 || true
+          mkdir -p ./e2e/__screenshots__/
+          cp -Lr "$result"/* ./e2e/__screenshots__/
+          chmod 600 ./e2e/__screenshots__/*
         '';
       };
 
@@ -171,7 +179,7 @@
         dist = dist;
         formatting = treefmtEval.config.build.check self;
         publish = publish;
-        snapshots = snapshots;
+        screenshots = screenshots;
       };
 
       gcroot = packages // {
@@ -210,9 +218,9 @@
         program = "${publish}/bin/publish";
       };
 
-      apps.x86_64-linux.generate-snapshots = {
+      apps.x86_64-linux.generate-screenshots = {
         type = "app";
-        program = "${generate-snapshots}/bin/generate-snapshots";
+        program = "${generate-screenshots}/bin/generate-screenshots";
       };
 
     };
