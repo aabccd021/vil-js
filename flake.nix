@@ -119,7 +119,7 @@
           trap 'cd $(pwd)' EXIT
           root=$(git rev-parse --show-toplevel)
           cd "$root"
-          result=$(nix build --no-link --print-out-paths .#screenshots)
+          result=$(nix build -L --no-link --print-out-paths .#screenshots)
           rm ./e2e/__screenshots__/* > /dev/null 2>&1 || true
           mkdir -p ./e2e/__screenshots__/
           cp -Lr "$result"/* ./e2e/__screenshots__/
