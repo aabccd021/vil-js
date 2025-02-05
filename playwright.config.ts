@@ -7,8 +7,8 @@ export default defineConfig({
   fullyParallel: true,
   maxFailures: 1,
   // workers: 1,
-  retries: 1,
-  // repeatEach: 2,
+  // retries: 1,
+  repeatEach: 3,
 
   testDir: "e2e",
   snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}-{arg}{ext}",
