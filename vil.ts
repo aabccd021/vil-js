@@ -9,22 +9,14 @@ import {
   scrollTo,
 } from "vanilla-virtua/virtualizer.ts";
 
-type ListCache = {
+type Cache = {
   cacheSnapshot: CacheSnapshot;
   scrollOffset: number;
 };
 
-type Cache = Record<string, ListCache>;
-
-type InitResult = {
-  virt: Virtualizer;
-  container: HTMLElement;
-  listId: string;
-};
-
 type Hooks = [string, (...args: unknown[]) => unknown];
 
-function invokeHooks(hooks: Hooks[], name: string, args: unknown): void {
+function invokeHooks(hooks: Hooks[], name: string, args?: unknown): void {
   for (const [hookName, fn] of hooks) {
     if (hookName !== name) {
       continue;
@@ -38,13 +30,9 @@ function invokeHooks(hooks: Hooks[], name: string, args: unknown): void {
 }
 
 async function infiniteScroll(args: {
-  listId: string;
-  hooks: Hooks[];
-  virt: Virtualizer;
   next: HTMLAnchorElement;
   triggers: NodeListOf<Element>;
 }): Promise<void> {
-  const { listId, hooks, virt: virtualizer } = args;
   let { triggers, next } = args;
 
   while (true) {
@@ -65,31 +53,30 @@ async function infiniteScroll(args: {
       const html = await response.text();
       const newDoc = new DOMParser().parseFromString(html, "text/html");
 
-      const newContainer = newDoc.querySelector(`[data-vil-container="${listId}"]`);
+      const newContainer = newDoc.querySelector("[data-vil-container]");
       if (newContainer === null) {
         return;
       }
 
-      const newTriggers = newContainer.querySelectorAll(`[data-vil-trigger="${listId}"]`);
+      const newTriggers = newContainer.querySelectorAll("[data-vil-trigger]");
       for (const trigger of Array.from(triggers)) {
         trigger.removeAttribute("data-vil-trigger");
       }
       triggers = newTriggers;
 
-      invokeHooks(hooks, "VilItemsAppend", { listId, document: newDoc });
+      invokeHooks(hooks, "VilItemsAppend", { document: newDoc });
 
       const newChildren = Array.from(newContainer.children);
 
       const htmlElChildren = newChildren.filter((child) => child instanceof HTMLElement);
 
       if (htmlElChildren.length !== newChildren.length) {
-        console.error(newChildren);
         throw new Error("Non-HTMLElement children found");
       }
 
-      appendItems(virtualizer, htmlElChildren);
+      appendItems(virt, htmlElChildren);
 
-      const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
+      const newNext = newDoc.querySelector<HTMLAnchorElement>("a[data-vil-next]");
       if (newNext === null) {
         next.remove();
         return;
@@ -107,11 +94,16 @@ async function infiniteScroll(args: {
   }
 }
 
-let lists: InitResult[];
+let virt: Virtualizer;
+let container: HTMLElement;
 let hooks: Hooks[] = [];
 
 export async function load(): Promise<void> {
-  const containers = document.body.querySelectorAll("[data-vil-container]");
+  const containerElt = document.body.querySelector("[data-vil-container]");
+  if (!(containerElt instanceof HTMLElement)) {
+    throw new Error("Container is not an HTMLElement");
+  }
+  container = containerElt;
 
   const hookLoadPromises = Array.from(document.querySelectorAll("script"))
     .filter((script) => script.type === "module")
@@ -139,85 +131,55 @@ export async function load(): Promise<void> {
   cacheMeta?.remove();
   const cache = JSON.parse(cacheMeta?.content ?? "null");
 
-  lists = [];
+  const root = containerElt.parentElement;
+  if (root === null) {
+    throw new Error("Root not found");
+  }
 
-  for (const container of Array.from(containers)) {
-    if (!(container instanceof HTMLElement)) {
-      console.error("Container is not an HTMLElement");
-      continue;
-    }
+  const triggers = containerElt.querySelectorAll("[data-vil-trigger]");
+  const next = document.body.querySelector<HTMLAnchorElement>("a[data-vil-next]");
 
-    const root = container.parentElement;
-    if (root === null) {
-      console.error("Root not found");
-      continue;
-    }
+  invokeHooks(hooks, "VilItemsAppend");
 
-    const listId = container.dataset["vilContainer"];
-    if (listId === undefined) {
-      console.error("List ID not found");
-      continue;
-    }
-
-    const triggers = container.querySelectorAll(`[data-vil-trigger="${listId}"]`);
-    const next = document.body.querySelector<HTMLAnchorElement>(`a[data-vil-next="${listId}"]`);
-
-    invokeHooks(hooks, "VilItemsAppend", { listId });
-
-    const listCache = cache?.[listId];
-
-    if (listCache !== undefined) {
-      for (const item of Array.from(container.children)) {
-        if (!(item instanceof HTMLElement)) {
-          console.error("Item is not an HTMLElement");
-          continue;
-        }
-        item.style.visibility = "visible";
-        item.style.position = "absolute";
+  if (cache !== undefined) {
+    for (const item of Array.from(containerElt.children)) {
+      if (!(item instanceof HTMLElement)) {
+        console.error("Item is not an HTMLElement");
+        continue;
       }
+      item.style.visibility = "visible";
+      item.style.position = "absolute";
     }
+  }
 
-    const virt = initVirtualizer({
-      container,
-      cache: listCache?.cacheSnapshot,
-      totalSizeStyle: "height",
-      offsetStyle: "top",
-      root,
-    });
+  virt = initVirtualizer({
+    container: containerElt,
+    cache: cache?.cacheSnapshot,
+    totalSizeStyle: "height",
+    offsetStyle: "top",
+    root,
+  });
 
-    scrollTo(virt, listCache?.scrollOffset);
+  scrollTo(virt, cache?.scrollOffset);
 
-    if (next !== null) {
-      infiniteScroll({
-        listId,
-        hooks,
-        virt,
-        next,
-        triggers,
-      });
-    }
-
-    lists.push({ virt, container, listId });
+  if (next !== null) {
+    infiniteScroll({ next, triggers });
   }
 }
 
 export function unload(): void {
-  const cache: Cache = {};
-  for (const { virt, container, listId } of lists) {
-    const cacheSnapshot = getCacheSnapshot(virt);
-    const scrollOffset = getScrollOffset(virt);
+  const cacheSnapshot = getCacheSnapshot(virt);
+  const scrollOffset = getScrollOffset(virt);
+  const cache: Cache = { cacheSnapshot, scrollOffset };
 
-    dispose(virt);
+  dispose(virt);
 
-    for (const item of virt.items) {
-      item.style.visibility = "visible";
-      container.appendChild(item);
-    }
-
-    cache[listId] = { cacheSnapshot, scrollOffset };
+  for (const item of virt.items) {
+    item.style.visibility = "visible";
+    container.appendChild(item);
   }
 
-  invokeHooks(hooks, "VilListUnload", {});
+  invokeHooks(hooks, "VilListUnload");
 
   const cacheMeta = document.createElement("meta");
   cacheMeta.name = "vil-cache";

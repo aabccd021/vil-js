@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { expectRendered, scroll, expectClickable, initLog, expectPageErrorsEmpty } from "./utils.ts";
+import { expectClickable, expectPageErrorsEmpty, expectRendered, initLog, scroll } from "./utils.ts";
 
 test.describe("full scroll", () => {
   test("range is correct", async ({ page }) => {

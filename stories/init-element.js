@@ -1,7 +1,4 @@
 export function load(args) {
-  if (args?.listId !== "main-list") {
-    return;
-  }
   const doc = args?.document ?? document;
 
   const listItems = doc.body.querySelectorAll("li");
