@@ -3,7 +3,12 @@
   <head>
     <title>Page 1</title>
     <link rel="stylesheet" href="/style.css" />
-    <script type="module" src="/freeze-page.js"></script>
+    <script
+      src="/freeze-page.js"
+      type="module"
+      data-invoke-hook="load"
+    ></script>
+    <script src="/invoke-hook.js" type="module"></script>
     <script
       src="/vil.js"
       type="module"

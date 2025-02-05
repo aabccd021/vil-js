@@ -40,7 +40,7 @@
 
       freezePageJs = pkgs.fetchurl {
         url = "https://unpkg.com/freeze-page-js@latest/dist/freeze-page.esnext.js";
-        hash = "sha256-yBkUysjN0fPN8pyfiEMrnkp1GXmWPbvoJhMATx9iDho=";
+        hash = "sha256-or6n/TBsL+pPWw8voYTmttlqzCWKkK5Xmf5/SrtCqwE=";
       };
 
       serve = pkgs.writeShellApplication {
