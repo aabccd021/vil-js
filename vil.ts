@@ -14,22 +14,16 @@ type Cache = {
   scrollOffset: number;
 };
 
-type Hooks = [string, (...args: unknown[]) => unknown];
+type Hook = (...args: unknown[]) => unknown;
 
-function invokeHooks(hooks: Hooks[], name: string, args?: unknown): void {
-  for (const [hookName, fn] of hooks) {
-    if (hookName !== name) {
-      continue;
-    }
-    try {
-      fn(args);
-    } catch (e) {
-      console.error(`Error in ${name} hook:`, e);
-    }
-  }
-}
+type LoadHooks = <T extends string[]>(hookNames: T) => Promise<{ [K in keyof T]: Hook[] }>;
+
+type HookLoaderModule = {
+  loadHooks: LoadHooks;
+};
 
 async function infiniteScroll(args: {
+  vilItemsAppendHooks: Hook[];
   next: HTMLAnchorElement;
   triggers: NodeListOf<Element>;
 }): Promise<void> {
@@ -64,7 +58,9 @@ async function infiniteScroll(args: {
       }
       triggers = newTriggers;
 
-      invokeHooks(hooks, "VilItemsAppend", { document: newDoc });
+      for (const hook of args.vilItemsAppendHooks) {
+        hook({ document: newDoc });
+      }
 
       const newChildren = Array.from(newContainer.children);
 
@@ -96,7 +92,8 @@ async function infiniteScroll(args: {
 
 let virt: Virtualizer;
 let container: HTMLElement;
-let hooks: Hooks[] = [];
+
+let vilListUnloadHooks: Hook[] = [];
 
 export async function load(): Promise<void> {
   const containerElt = document.body.querySelector("[data-vil-container]");
@@ -105,27 +102,16 @@ export async function load(): Promise<void> {
   }
   container = containerElt;
 
-  const hookLoadPromises = Array.from(document.querySelectorAll("script"))
-    .filter((script) => script.type === "module")
-    .flatMap(async (script) => {
-      const module = await import(script.src);
-      if (!("hooks" in module && Array.isArray(module.hooks))) {
-        return [];
-      }
-      return module.hooks as Hooks[];
-    });
+  let vilItemsAppendHooks: Hook[] = [];
 
-  const hookLoadResultsNested = await Promise.allSettled(hookLoadPromises);
-
-  for (const hookLoadResult of hookLoadResultsNested) {
-    if (hookLoadResult.status === "rejected") {
-      console.error(hookLoadResult.reason);
-    }
+  const hookLoader = document.querySelector<HTMLScriptElement>("script[data-hook-loader]");
+  if (hookLoader !== null) {
+    const hookLoaderModule: HookLoaderModule = await import(hookLoader.src);
+    [vilItemsAppendHooks, vilListUnloadHooks] = await hookLoaderModule.loadHooks([
+      "VilItemsAppend",
+      "VilListUnload",
+    ] as const);
   }
-
-  hooks = hookLoadResultsNested
-    .filter((hookLoadResults) => hookLoadResults.status === "fulfilled")
-    .flatMap((hookLoadResults) => hookLoadResults.value);
 
   const cacheMeta = document.querySelector<HTMLMetaElement>('meta[name="vil-cache"]');
   cacheMeta?.remove();
@@ -139,7 +125,9 @@ export async function load(): Promise<void> {
   const triggers = containerElt.querySelectorAll("[data-vil-trigger]");
   const next = document.body.querySelector<HTMLAnchorElement>("a[data-vil-next]");
 
-  invokeHooks(hooks, "VilItemsAppend");
+  for (const hook of vilItemsAppendHooks) {
+    hook({ document });
+  }
 
   if (cache !== undefined) {
     for (const item of Array.from(containerElt.children)) {
@@ -163,7 +151,7 @@ export async function load(): Promise<void> {
   scrollTo(virt, cache?.scrollOffset);
 
   if (next !== null) {
-    infiniteScroll({ next, triggers });
+    infiniteScroll({ next, triggers, vilItemsAppendHooks });
   }
 }
 
@@ -179,7 +167,9 @@ export function unload(): void {
     container.appendChild(item);
   }
 
-  invokeHooks(hooks, "VilListUnload");
+  for (const hook of vilListUnloadHooks) {
+    hook();
+  }
 
   const cacheMeta = document.createElement("meta");
   cacheMeta.name = "vil-cache";

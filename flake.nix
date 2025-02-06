@@ -30,7 +30,7 @@
 
       exportHookJs = pkgs.fetchurl {
         url = "https://unpkg.com/export-hook-js@latest/dist/export-hook.esnext.js";
-        hash = "sha256-TvWKQ14VjHh7ca/zGvcTvfpanH8x7hQINKPb4hu9sOs=";
+        hash = "sha256-1duEckbWp4kmIm4LtYwzig0Wb1/Vp1gXmWswBtcuYVA=";
       };
 
       invokeHookJs = pkgs.fetchurl {
@@ -39,8 +39,8 @@
       };
 
       freezePageJs = pkgs.fetchurl {
-        url = "https://unpkg.com/freeze-page-js@latest/dist/freeze-page.esnext.js";
-        hash = "sha256-lhTJGNYmgOk0kgCIXXYqaVdXKAlgPeS0PU8dVwN/VKQ=";
+        url = "https://unpkg.com/freeze-page-js@0.0.8/dist/freeze-page.esnext.js";
+        hash = "sha256-uYQ/X9E6AiEed8Kix6oooLfvbmn6KQ0PKHfbCXGEdmU=";
       };
 
       serve = pkgs.writeShellApplication {
