@@ -39,7 +39,7 @@
       };
 
       freezePageJs = pkgs.fetchurl {
-        url = "https://unpkg.com/freeze-page-js@0.0.8/dist/freeze-page.esnext.js";
+        url = "https://unpkg.com/freeze-page-js@latest/dist/freeze-page.esnext.js";
         hash = "sha256-uYQ/X9E6AiEed8Kix6oooLfvbmn6KQ0PKHfbCXGEdmU=";
       };
 
