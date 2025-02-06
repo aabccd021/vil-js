@@ -11,7 +11,7 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - uses: DeterminateSystems/flake-checker-action@main
 
-      # https://www.npmjs.com/settings/aabccd021/tokens/granular-access-tokens/new
       - run: nix run .#publish
         env:
+          # https://www.npmjs.com/settings/aabccd021/tokens/granular-access-tokens/new
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
