@@ -133,6 +133,7 @@
         cp -Lr ${nodeModules} ./node_modules
         cp -L ${./package.json} ./package.json
         cp -L ${./vil.ts} ./vil.ts
+        cp -L ${./stories/style.css} "$out/style.css"
 
         ${pkgs.esbuild}/bin/esbuild ./vil.ts \
           --bundle \

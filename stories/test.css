@@ -1,0 +1,15 @@
+.test-body {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* https://github.com/inokawa/virtua/blob/main/.storybook/preview-head.html */
+.test-root {
+  width: 100vw;
+  height: 100vh;
+}
+
+li {
+  border-bottom: 1px solid #ccc;
+}
